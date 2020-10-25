@@ -1,4 +1,4 @@
-#!bash
+#!fish
 #
 # Copyright The Helm Authors.
 #

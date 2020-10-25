@@ -1,41 +1,8 @@
 #!bash
-#
-# Copyright The Helm Authors.
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-#
-
-# This script allows to run completion tests for the bash shell.
-# It also supports zsh completion tests, when zsh is used in bash-completion
-# compatibility mode.
-#
-# To use this script one should create a test script which will:
-# 1- source this script
-# 2- source the completion script to be tested
-# 3- call repeatedly the _completionTests_verifyCompletion() function passing it
-#    the command line to be completed followed by the expected completion.
-#
-# For example, the test script can look like this:
-#
-# #!bash
-# # source completionTests-base.sh
-# # source helmCompletionScript.${SHELL_TYPE}
-# # _completionTests_verifyCompletion "helm stat" "status"
-#
 
 # Don't use the new source <() form as it does not work with bash v3
 source /dev/stdin <<- EOF
-   $(helm completion ${SHELL_TYPE})
+   $(testprog completion ${SHELL_TYPE})
 EOF
 
 # Global variable to keep track of if a test has failed.
@@ -44,51 +11,30 @@ _completionTests_TEST_FAILED=0
 # Run completion and indicate success or failure.
 #    $1 is the command line that should be completed
 #    $2 is the expected result of the completion
-# If $1 = KFAIL indicates a Known failure
-#    $1 = BFAIL indicates a Known failure only for bash
-#    $1 = ZFAIL indicates a Known failure only for zsh
 _completionTests_verifyCompletion() {
-   local expectedFailure="NO"
-   case $1 in
-   [K,B,Z]FAIL)
-      expectedFailure=$1
-      shift
-      ;;
-   esac
+    local cmdLine=$1
+    local expected=$2
+    local currentFailure=0
 
-   local cmdLine=$1
-   local expected=$2
-   local currentFailure=0
+    result=$(_completionTests_complete "${cmdLine}")
 
-   result=$(_completionTests_complete "${cmdLine}")
+    result=$(_completionTests_sort "$result")
+    expected=$(_completionTests_sort "$expected")
 
-   result=$(_completionTests_sort "$result")
-   expected=$(_completionTests_sort "$expected")
+    if [ "$result" = "$expected" ]; then
+        # Truncate result to save space
+        resultOut="$result"
+        if [ "${#result}" -gt 50 ]; then
+            resultOut="${result:0:50} <truncated>"
+        fi
+        echo "SUCCESS: \"$cmdLine\" completes to \"$resultOut\""
+    else
+        _completionTests_TEST_FAILED=1
+        currentFailure=1
+        echo "ERROR: \"$cmdLine\" should complete to \"$expected\" but we got \"$result\""
+    fi
 
-   resultOut="$result"
-   if [ "${#result}" -gt 50 ]; then
-      resultOut="${result:0:50} <truncated>"
-   fi
-
-   if [ $expectedFailure = "KFAIL" ] ||
-           ([ $expectedFailure = "BFAIL" ] && [ $SHELL_TYPE = "bash" ]) ||
-           ([ $expectedFailure = "ZFAIL" ] && [ $SHELL_TYPE = "zsh" ]); then
-      if [ "$result" = "$expected" ]; then
-         _completionTests_TEST_FAILED=1
-         currentFailure=1
-         echo "UNEXPECTED SUCCESS: \"$cmdLine\" completes to \"$resultOut\""
-      else
-         echo "$expectedFailure: \"$cmdLine\" should complete to \"$expected\" but we got \"$resultOut\""
-      fi
-   elif [ "$result" = "$expected" ]; then
-      echo "SUCCESS: \"$cmdLine\" completes to \"$resultOut\""
-   else
-      _completionTests_TEST_FAILED=1
-      currentFailure=1
-      echo "ERROR: \"$cmdLine\" should complete to \"$expected\" but we got \"$result\""
-   fi
-
-   return $currentFailure
+    return $currentFailure
 }
 
 _completionTests_disable_sort() {
@@ -132,7 +78,6 @@ _completionTests_findCompletionFunction() {
 _completionTests_complete() {
    local cmdLine=$1
 
-
    # Set the bash completion variables which are
    # used for both bash and zsh completion
    COMP_LINE=${cmdLine}
@@ -168,7 +113,7 @@ _completionTests_exit() {
 # completion.  Since it doesn't work anyway in our case, let's
 # disable it to avoid the error printouts.
 # Impacts are limited to completion of flags and even then
-# for zsh and bash 3, it is not even available.
+# for bash 3, it is not even available.
 compopt() {
    :
 }
