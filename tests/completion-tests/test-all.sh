@@ -40,9 +40,8 @@ COMP_SCRIPT_NAME=test-completion.sh
 COMP_SCRIPT=${COMP_DIR}/${COMP_SCRIPT_NAME}
 
 rm -rf ${COMP_DIR}
-mkdir -p ${COMP_DIR}/lib
 mkdir -p ${COMP_DIR}/bin
-cp -a ${SCRIPT_DIR} ${COMP_DIR}
+cp -a ${SCRIPT_DIR}/ ${COMP_DIR}
 
 CHECK_BINARY_PATH="$(cd ${BINARY_PATH_DOCKER} && pwd)/${BINARY_NAME}"
 if [[ ! -f ${CHECK_BINARY_PATH} ]] && [[ -L ${CHECK_BINARY_PATH} ]]; then
@@ -197,21 +196,13 @@ if [ "$(uname)" == "Darwin" ]; then
         echo "Bash or bash_completion package not available locally"
     fi
  
-    # if which zsh>/dev/null; then
-    #     echo;echo;
-    #     echo "Completion tests for zsh running locally"
-    #     ${COMP_SCRIPT} zsh
-    # else
-    #    echo "Zsh not available locally"
-    # fi
-
-    # if which fish>/dev/null; then
-    #     echo;echo;
-    #     echo "Completion tests for fish running locally"
-    #     ${COMP_SCRIPT} fish
-    # else
-    #     echo "Fish shell not available locally"
-    # fi
+    if which fish>/dev/null; then
+        echo;echo;
+        echo "Completion tests for fish running locally"
+        ${COMP_SCRIPT} fish
+    else
+        echo "Fish shell not available locally"
+    fi
 fi
 
 # Indicate if anything failed during the run

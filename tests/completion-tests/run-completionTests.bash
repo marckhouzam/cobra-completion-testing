@@ -16,6 +16,6 @@ if [ $(uname) = "Darwin" ]; then
 fi
 source ${bashCompletionScript}
 
-source ${COMP_DIR}/completionTests-lib.bash
+source ${COMP_DIR}/lib/bash-comp-testing.bash
 source ${COMP_DIR}/completionTests-common.sh
 source ${COMP_DIR}/completionTests.bash
