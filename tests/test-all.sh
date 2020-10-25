@@ -1,18 +1,4 @@
 #!/usr/bin/env bash
-#
-# Copyright The Helm Authors.
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
 
 # This script runs completion tests in different environments and different shells.
 
@@ -26,7 +12,7 @@ set -e
 SCRIPT_DIR=$(dirname "${BASH_SOURCE[0]}")
 
 BINARY_NAME=testprog
-BINARY_ROOT=${SCRIPT_DIR}/../../testprog/bin
+BINARY_ROOT=${SCRIPT_DIR}/../testprog/bin
 BINARY_PATH_DOCKER=${BINARY_ROOT}/../dist/linux-amd64
 BINARY_PATH_LOCAL=${BINARY_ROOT}
 
@@ -37,7 +23,7 @@ export COMP_DIR=$OUTPUT_DIR/tmp # $(mktemp -d ${OUTPUT_DIR}/cobra-completion-tes
 trap "rm -rf ${COMP_DIR}" EXIT
 
 COMP_SCRIPT_NAME=test-completion.sh
-COMP_SCRIPT=${COMP_DIR}/${COMP_SCRIPT_NAME}
+COMP_SCRIPT=${COMP_DIR}/common/${COMP_SCRIPT_NAME}
 
 rm -rf ${COMP_DIR}
 mkdir -p ${COMP_DIR}/bin
