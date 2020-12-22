@@ -9,9 +9,9 @@
 #############################################################################
 
 # Basic first level commands (static completion)
-_completionTests_verifyCompletion "testprog comp " "completion"
-_completionTests_verifyCompletion "testprog help comp" "completion"
-_completionTests_verifyCompletion "testprog completion " "bash fish zsh"
+#_completionTests_verifyCompletion "testprog comp " "completion"
+#_completionTests_verifyCompletion "testprog help comp" "completion"
+#_completionTests_verifyCompletion "testprog completion " "bash fish zsh"
 
 
 # Test logging using $BASH_COMP_DEBUG_FILE
@@ -30,3 +30,14 @@ _completionTests_verifyCompletion "testprog completion " "bash fish zsh"
 # Test when completions are not filtered by prefix.  NoSpace and FileComp should still work.
 
 
+_completionTests_verifyCompletion "testprog prefix default c" "cat"
+_completionTests_verifyCompletion "testprog prefix default f" "file"
+_completionTests_verifyCompletion "testprog prefix default z" ""
+_completionTests_verifyCompletion "testprog prefix nofile c" "cat"
+_completionTests_verifyCompletion "testprog prefix nofile f" ""
+_completionTests_verifyCompletion "testprog prefix nofile z" ""
+_completionTests_verifyCompletion "testprog prefix nospace c" "cat"
+_completionTests_verifyCompletion "testprog prefix nospace z" ""
+_completionTests_verifyCompletion "testprog prefix nofilenospace c" "cat"
+_completionTests_verifyCompletion "testprog prefix nofilenospace f" ""
+_completionTests_verifyCompletion "testprog prefix nofilenospace z" ""

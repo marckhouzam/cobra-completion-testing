@@ -7,12 +7,13 @@ if [ -z $(which docker) ]; then
   exit 2;
 fi
 
+set -x
 # Fail as soon as there is an error
 set -e
-SCRIPT_DIR=$(dirname "${BASH_SOURCE[0]}")
+SCRIPT_DIR=$(cd $(dirname "${BASH_SOURCE[0]}")/..; pwd)
 
 BINARY_NAME=testprog
-BINARY_ROOT=${SCRIPT_DIR}/../testprog/bin
+BINARY_ROOT=${SCRIPT_DIR}/testprog/bin
 BINARY_PATH_DOCKER=${BINARY_ROOT}/../dist/linux-amd64
 BINARY_PATH_LOCAL=${BINARY_ROOT}
 
@@ -43,7 +44,7 @@ set +e
 GOT_FAILURE=0
 trap "GOT_FAILURE=1" ERR
 
-cd ${SCRIPT_DIR}/testdir
+cd ${SCRIPT_DIR}/../testdir
 
 # ########################################
 # # Bash 4 completion tests
@@ -176,13 +177,13 @@ if [ "$(uname)" == "Darwin" ]; then
         exit 1
     fi
 
-    if which bash>/dev/null && [ -f /usr/local/etc/bash_completion ]; then
-        echo;echo;
-        echo "Completion tests for bash running locally"
-        ${COMP_SCRIPT} bash
-    else
-        echo "Bash or bash_completion package not available locally"
-    fi
+    # if which bash>/dev/null && [ -f /usr/local/etc/bash_completion ]; then
+    #     echo;echo;
+    #     echo "Completion tests for bash running locally"
+    #     ${COMP_SCRIPT} bash
+    # else
+    #     echo "Bash or bash_completion package not available locally"
+    # fi
  
     if which fish>/dev/null; then
         echo;echo;
