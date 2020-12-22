@@ -111,6 +111,33 @@ var defaultCmdNoPrefix = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {},
 }
 
+var fileExtCmdPrefix = &cobra.Command{
+	Use:   "filext",
+	Short: "Directive: fileext",
+	ValidArgsFunction: func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return []string{"yaml", "json"}, cobra.ShellCompDirectiveFilterFileExt
+	},
+	Run: func(cmd *cobra.Command, args []string) {},
+}
+
+var subDirCmdPrefix = &cobra.Command{
+	Use:   "subdir",
+	Short: "Directive: subdir",
+	ValidArgsFunction: func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return []string{"dir"}, cobra.ShellCompDirectiveFilterDirs
+	},
+	Run: func(cmd *cobra.Command, args []string) {},
+}
+
+var errorCmdPrefix = &cobra.Command{
+	Use:   "error",
+	Short: "Directive: error",
+	ValidArgsFunction: func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return completions, cobra.ShellCompDirectiveError
+	},
+	Run: func(cmd *cobra.Command, args []string) {},
+}
+
 func setFlags() {
 	// rootCmd.Flags().String("theme", "", "theme to use (located in /themes/THEMENAME/)")
 	// rootCmd.Flags().SetAnnotation("theme", cobra.BashCompSubdirsInDir, []string{"themes"})
@@ -184,6 +211,9 @@ func main() {
 	rootCmd.AddCommand(
 		prefixCmd,
 		noPrefixCmd,
+		fileExtCmdPrefix,
+		subDirCmdPrefix,
+		errorCmdPrefix,
 	)
 
 	prefixCmd.AddCommand(

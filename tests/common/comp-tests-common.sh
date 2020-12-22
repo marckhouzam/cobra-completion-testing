@@ -20,22 +20,25 @@
 
 # Test --flag= form
 
-# Test ShellCompDirectiveDefault => File completion when no other completions
-# Test ShellCompDirectiveNoSpace => No space even when there is a single completion
-# Test ShellCompDirectiveNoFileComp => No file completion even when there are no other completions
-# Test ShellCompDirectiveFilterFileExt => Not supported for fish, file completion instead
-# Test ShellCompDirectiveFilterDirs => Not supported for fish, file completion instead
-# Test ShellCompDirectiveError => File completion only
 
 # Test when completions are not filtered by prefix.  NoSpace and FileComp should still work.
 
 
+#
+# Completions are filtered by prefix by program
+#
+
+# Test ShellCompDirectiveDefault => File completion when no other completions
 _completionTests_verifyCompletion "testprog prefix default c" "cat"
 _completionTests_verifyCompletion "testprog prefix default f" "file"
 _completionTests_verifyCompletion "testprog prefix default z" ""
+
+# Test ShellCompDirectiveNoFileComp => No file completion even when there are no other completions
 _completionTests_verifyCompletion "testprog prefix nofile c" "cat"
 _completionTests_verifyCompletion "testprog prefix nofile f" ""
 _completionTests_verifyCompletion "testprog prefix nofile z" ""
+
+# Test ShellCompDirectiveNoSpace => No space even when there is a single completion
 _completionTests_verifyCompletion "testprog prefix nospace b" "bear bearpaw"
 _completionTests_verifyCompletion "testprog prefix nospace c" "cat cat."
 _completionTests_verifyCompletion "testprog prefix nospace f" "file"
@@ -44,3 +47,42 @@ _completionTests_verifyCompletion "testprog prefix nofilenospace b" "bear bearpa
 _completionTests_verifyCompletion "testprog prefix nofilenospace c" "cat cat."
 _completionTests_verifyCompletion "testprog prefix nofilenospace f" ""
 _completionTests_verifyCompletion "testprog prefix nofilenospace z" ""
+
+#
+# Completions are NOT filtered by prefix by the program
+#
+
+# When not allowing file completion, we can get smarter completions from fish
+# when the program does not filter by prefix
+_completionTests_verifyCompletion "testprog noprefix nofile paw" "bearpaw"
+
+# Test ShellCompDirectiveDefault => File completion when no other completions
+_completionTests_verifyCompletion "testprog noprefix default c" "cat"
+_completionTests_verifyCompletion "testprog noprefix default f" "file"
+_completionTests_verifyCompletion "testprog noprefix default z" ""
+
+# Test ShellCompDirectiveNoFileComp => No file completion even when there are no other completions
+_completionTests_verifyCompletion "testprog noprefix nofile c" "cat"
+_completionTests_verifyCompletion "testprog noprefix nofile f" ""
+_completionTests_verifyCompletion "testprog noprefix nofile z" ""
+
+# Test ShellCompDirectiveNoSpace => No space even when there is a single completion
+_completionTests_verifyCompletion "testprog noprefix nospace b" "bear bearpaw"
+_completionTests_verifyCompletion "testprog noprefix nospace c" "cat cat."
+_completionTests_verifyCompletion "testprog noprefix nospace f" "file"
+_completionTests_verifyCompletion "testprog noprefix nospace z" ""
+_completionTests_verifyCompletion "testprog noprefix nofilenospace b" "bear bearpaw"
+_completionTests_verifyCompletion "testprog noprefix nofilenospace c" "cat cat."
+_completionTests_verifyCompletion "testprog noprefix nofilenospace f" ""
+_completionTests_verifyCompletion "testprog noprefix nofilenospace z" ""
+
+# Other directives
+# Test ShellCompDirectiveFilterFileExt => Not supported for fish, file completion instead
+_completionTests_verifyCompletion "testprog fileext yaml" "yaml.yaml"
+
+# Test ShellCompDirectiveFilterDirs => Not supported for fish, file completion instead
+_completionTests_verifyCompletion "testprog subdir dir" "dir/"
+
+# Test ShellCompDirectiveError => File completion only
+_completionTests_verifyCompletion "testprog error f" "file"
+_completionTests_verifyCompletion "testprog error z" ""
