@@ -6,6 +6,9 @@ set -g _completionTests_TEST_FAILED 0
 # Must set the path again for Fish as the path gets modified when the shell starts
 set PATH $COMP_DIR/bin:$PATH
 
+# Setup completion
+testprog completion fish --no-descriptions | source
+
 # Run completion and indicate success or failure.
 #    $1 is the command line that should be completed
 #    $2 is the expected result of the completion

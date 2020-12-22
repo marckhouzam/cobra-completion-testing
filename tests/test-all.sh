@@ -31,8 +31,8 @@ cp -a ${SCRIPT_DIR}/ ${COMP_DIR}
 
 CHECK_BINARY_PATH="$(cd ${BINARY_PATH_DOCKER} && pwd)/${BINARY_NAME}"
 if [[ ! -f ${CHECK_BINARY_PATH} ]] && [[ -L ${CHECK_BINARY_PATH} ]]; then
-    echo "These tests require a helm binary located at ${CHECK_BINARY_PATH}"
-    echo "Hint: Run 'make build-cross' in a clone of helm repo"
+    echo "These tests require a binary located at ${CHECK_BINARY_PATH}"
+    echo "Hint: Run 'make build-cross' in a clone of the repo"
     exit 2
 fi
 cp ${CHECK_BINARY_PATH} ${COMP_DIR}/bin
@@ -42,6 +42,8 @@ cp ${CHECK_BINARY_PATH} ${COMP_DIR}/bin
 set +e
 GOT_FAILURE=0
 trap "GOT_FAILURE=1" ERR
+
+cd ${SCRIPT_DIR}/testdir
 
 # ########################################
 # # Bash 4 completion tests
@@ -168,7 +170,7 @@ if [ "$(uname)" == "Darwin" ]; then
     echo "Attempting completion tests on Darwin"
     echo "======================================"
 
-    # Copy the local helm to use
+    # Copy the local testprogram to use
     if ! cp ${BINARY_PATH_LOCAL}/${BINARY_NAME} ${COMP_DIR}/bin ; then
         echo "Cannot find ${BINARY_NAME} under ${BINARY_PATH_LOCAL}/${BINARY_NAME} although it is what we need to test."
         exit 1

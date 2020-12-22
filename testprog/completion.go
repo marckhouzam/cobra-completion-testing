@@ -25,7 +25,7 @@ var disableCompDescriptions bool
 
 func newCompletionCmd(out io.Writer) *cobra.Command {
 	cmd := &cobra.Command{Use: "completion"}
-	cmd.Flags().BoolVar(&disableCompDescriptions, "no-descriptions", false, "disable completion descriptions")
+	cmd.PersistentFlags().BoolVar(&disableCompDescriptions, "no-descriptions", false, "disable completion descriptions")
 
 	bash := &cobra.Command{
 		Use: "bash",
