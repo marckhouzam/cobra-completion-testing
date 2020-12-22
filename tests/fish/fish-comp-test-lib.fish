@@ -53,7 +53,7 @@ function _completionTests_sort
    else
       # We use printf instead of echo as the $1 could be -n which would be
       # interpreted as an argument to echo
-      printf "%s\n" "$argv[1]" | sed -e 's/^ *//' -e 's/ *$//' | tr ' ' '\n' | sort -n | tr '\n' ' '
+      string trim $argv[1] | tr ' ' '\n' | sort -n | tr '\n' ' ' | string trim
    end
 end
 

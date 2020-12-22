@@ -7,7 +7,6 @@ if [ -z $(which docker) ]; then
   exit 2;
 fi
 
-set -x
 # Fail as soon as there is an error
 set -e
 SCRIPT_DIR=$(cd $(dirname "${BASH_SOURCE[0]}")/..; pwd)
@@ -20,7 +19,7 @@ BINARY_PATH_LOCAL=${BINARY_ROOT}
 # Only use the -d flag for mktemp as many other flags don't
 # work on every plateform
 OUTPUT_DIR="${OUTPUT_DIR:-${PWD}}"
-export COMP_DIR=$OUTPUT_DIR/tmp # $(mktemp -d ${OUTPUT_DIR}/cobra-completion-testing.XXXXXX)
+export COMP_DIR=$(mktemp -d ${OUTPUT_DIR}/cobra-completion-testing.XXXXXX)
 trap "rm -rf ${COMP_DIR}" EXIT
 
 COMP_SCRIPT_NAME=test-completion.sh
@@ -28,7 +27,7 @@ COMP_SCRIPT=${COMP_DIR}/common/${COMP_SCRIPT_NAME}
 
 rm -rf ${COMP_DIR}
 mkdir -p ${COMP_DIR}/bin
-cp -a ${SCRIPT_DIR}/ ${COMP_DIR}
+cp -a ${SCRIPT_DIR}/tests/ ${COMP_DIR}
 
 CHECK_BINARY_PATH="$(cd ${BINARY_PATH_DOCKER} && pwd)/${BINARY_NAME}"
 if [[ ! -f ${CHECK_BINARY_PATH} ]] && [[ -L ${CHECK_BINARY_PATH} ]]; then
@@ -44,7 +43,7 @@ set +e
 GOT_FAILURE=0
 trap "GOT_FAILURE=1" ERR
 
-cd ${SCRIPT_DIR}/../testdir
+cd ${SCRIPT_DIR}/testdir
 
 # ########################################
 # # Bash 4 completion tests
