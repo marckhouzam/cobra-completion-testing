@@ -1,9 +1,29 @@
 #!bash
 
+echo "===================================================="
+echo Running completions tests on $UNAME with $SHELL_TYPE $BASH_VERSION
+echo "===================================================="
+
+# Setup bash_completion package
+bashCompletionScript="/usr/share/bash-completion/bash_completion"
+if [ $(uname) = "Darwin" ]; then
+   bashCompletionScript="/usr/local/etc/bash_completion"
+fi
+source ${bashCompletionScript}
+
+# Put test program on PATH
+export PATH=$TESTPROG_DIR/bin:$PATH
+
+# Setup completion of testprog
 # Don't use the new source <() form as it does not work with bash v3
 source /dev/stdin <<- EOF
    $(testprog completion ${SHELL_TYPE})
 EOF
+
+# Enable aliases to work even though we are in a script (non-interactive shell).
+# This allows to test completion with aliases.
+# Only needed for bash; zsh does this automatically.
+shopt -s expand_aliases
 
 # Global variable to keep track of if a test has failed.
 _completionTests_TEST_FAILED=0
@@ -37,24 +57,10 @@ _completionTests_verifyCompletion() {
     return $currentFailure
 }
 
-_completionTests_disable_sort() {
-    _completionTests_DISABLE_SORT=1
-}
-
-_completionTests_enable_sort() {
-    unset _completionTests_DISABLE_SORT
-}
-
 _completionTests_sort() {
-   if [ -n "${_completionTests_DISABLE_SORT}" ]; then
-      # We use printf instead of echo as the $1 could be -n which would be
-      # interpreted as an argument to echo
-      printf "%s\n" "$1"
-   else
-      # We use printf instead of echo as the $1 could be -n which would be
-      # interpreted as an argument to echo
-      printf "%s\n" "$1" | sed -e 's/^ *//' -e 's/ *$//' | tr ' ' '\n' | sort -n | tr '\n' ' '
-   fi
+   # We use printf instead of echo as the $1 could be -n which would be
+   # interpreted as an argument to echo
+   printf "%s\n" "$1" | sed -e 's/^ *//' -e 's/ *$//' | tr ' ' '\n' | sort -n | tr '\n' ' '
 }
 
 # Find the completion function associated with the binary.

@@ -1,13 +1,17 @@
 #!fish
 
-# Global variable to keep track of if a test has failed.
-set -g _completionTests_TEST_FAILED 0
+echo "===================================================="
+echo Running completions tests on $UNAME with $SHELL_TYPE $version
+echo "===================================================="
 
 # Must set the path again for Fish as the path gets modified when the shell starts
-set PATH $COMP_DIR/bin:$PATH
+set PATH $TESTPROG_DIR/bin:$PATH
 
 # Setup completion
 testprog completion fish --no-descriptions | source
+
+# Global variable to keep track of if a test has failed.
+set -g _completionTests_TEST_FAILED 0
 
 # Run completion and indicate success or failure.
 #    $1 is the command line that should be completed
@@ -37,24 +41,8 @@ function _completionTests_verifyCompletion
     return $currentFailure
 end
 
-function _completionTests_disable_sort
-    set -g _completionTests_DISABLE_SORT 1
-end
-
-function _completionTests_enable_sort
-    set -e _completionTests_DISABLE_SORT
-end
-
 function _completionTests_sort
-   if test -n "$_completionTests_DISABLE_SORT"
-      # We use printf instead of echo as the $1 could be -n which would be
-      # interpreted as an argument to echo
-      printf "%s\n" "$argv[1]"
-   else
-      # We use printf instead of echo as the $1 could be -n which would be
-      # interpreted as an argument to echo
-      string trim $argv[1] | tr ' ' '\n' | sort -n | tr '\n' ' ' | string trim
-   end
+   string trim $argv[1] | tr ' ' '\n' | sort -n | tr '\n' ' ' | string trim
 end
 
 function _completionTests_exit

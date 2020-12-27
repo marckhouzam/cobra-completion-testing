@@ -19,15 +19,15 @@ BINARY_PATH_LOCAL=${BINARY_ROOT}
 # Only use the -d flag for mktemp as many other flags don't
 # work on every plateform
 OUTPUT_DIR="${OUTPUT_DIR:-${PWD}}"
-export COMP_DIR=$(mktemp -d ${OUTPUT_DIR}/cobra-completion-testing.XXXXXX)
-trap "rm -rf ${COMP_DIR}" EXIT
+export TESTS_DIR=$(mktemp -d ${OUTPUT_DIR}/cobra-completion-testing.XXXXXX)
+trap "rm -rf ${TESTS_DIR}" EXIT
 
 COMP_SCRIPT_NAME=test-completion.sh
-COMP_SCRIPT=${COMP_DIR}/common/${COMP_SCRIPT_NAME}
+COMP_SCRIPT=${TESTS_DIR}/common/${COMP_SCRIPT_NAME}
 
-rm -rf ${COMP_DIR}
-mkdir -p ${COMP_DIR}/bin
-cp -a ${SCRIPT_DIR}/tests/ ${COMP_DIR}
+rm -rf ${TESTS_DIR}
+mkdir -p ${TESTS_DIR}/bin
+cp -a ${SCRIPT_DIR}/tests/ ${TESTS_DIR}
 
 CHECK_BINARY_PATH="$(cd ${BINARY_PATH_DOCKER} && pwd)/${BINARY_NAME}"
 if [[ ! -f ${CHECK_BINARY_PATH} ]] && [[ -L ${CHECK_BINARY_PATH} ]]; then
@@ -35,7 +35,7 @@ if [[ ! -f ${CHECK_BINARY_PATH} ]] && [[ -L ${CHECK_BINARY_PATH} ]]; then
     echo "Hint: Run 'make build-cross' in a clone of the repo"
     exit 2
 fi
-cp ${CHECK_BINARY_PATH} ${COMP_DIR}/bin
+cp ${CHECK_BINARY_PATH} ${TESTS_DIR}/bin
 
 # Now run all tests, even if there is a failure.
 # But remember if there was any failure to report it at the end.
@@ -56,10 +56,10 @@ cd ${SCRIPT_DIR}/testdir
 #    RUN apk update && apk add bash-completion ca-certificates
 # EOF
 # docker run --rm \
-#            -v ${COMP_DIR}:${COMP_DIR} \
+#            -v ${TESTS_DIR}:${TESTS_DIR} \
 #            -e ROBOT_HELM_V3=${ROBOT_HELM_V3} \
 #            -e ROBOT_DEBUG_LEVEL=${ROBOT_DEBUG_LEVEL} \
-#            -e COMP_DIR=${COMP_DIR} \
+#            -e TESTS_DIR=${TESTS_DIR} \
 #            ${BASH4_IMAGE} ${COMP_SCRIPT} bash
 
 # ########################################
@@ -80,11 +80,11 @@ cd ${SCRIPT_DIR}/testdir
 #             tar xvz -C /usr/share/bash-completion --strip-components 1 bash-completion-1.3/bash_completion
 # EOF
 # docker run --rm \
-#            -v ${COMP_DIR}:${COMP_DIR} \
+#            -v ${TESTS_DIR}:${TESTS_DIR} \
 #            -e BASH_COMPLETION=/usr/share/bash-completion \
 #            -e ROBOT_HELM_V3=${ROBOT_HELM_V3} \
 #            -e ROBOT_DEBUG_LEVEL=${ROBOT_DEBUG_LEVEL} \
-#            -e COMP_DIR=${COMP_DIR} \
+#            -e TESTS_DIR=${TESTS_DIR} \
 #            ${BASH3_IMAGE} ${COMP_SCRIPT} bash
 
 # ########################################
@@ -99,10 +99,10 @@ cd ${SCRIPT_DIR}/testdir
 #    RUN yum install -y bash-completion which
 # EOF
 # docker run --rm \
-#            -v ${COMP_DIR}:${COMP_DIR} \
+#            -v ${TESTS_DIR}:${TESTS_DIR} \
 #            -e ROBOT_HELM_V3=${ROBOT_HELM_V3} \
 #            -e ROBOT_DEBUG_LEVEL=${ROBOT_DEBUG_LEVEL} \
-#            -e COMP_DIR=${COMP_DIR} \
+#            -e TESTS_DIR=${TESTS_DIR} \
 #            ${BASH_IMAGE} ${COMP_SCRIPT} bash
 
 # ########################################
@@ -117,10 +117,10 @@ cd ${SCRIPT_DIR}/testdir
 #    RUN apt-get update && apt-get install -y wget
 # EOF
 # docker run --rm \
-#            -v ${COMP_DIR}:${COMP_DIR} \
+#            -v ${TESTS_DIR}:${TESTS_DIR} \
 #            -e ROBOT_HELM_V3=${ROBOT_HELM_V3} \
 #            -e ROBOT_DEBUG_LEVEL=${ROBOT_DEBUG_LEVEL} \
-#            -e COMP_DIR=${COMP_DIR} \
+#            -e TESTS_DIR=${TESTS_DIR} \
 #            ${ZSH_IMAGE} ${COMP_SCRIPT} zsh
 
 # ########################################
@@ -135,10 +135,10 @@ cd ${SCRIPT_DIR}/testdir
 #    RUN apk update && apk add bash zsh ca-certificates
 # EOF
 # docker run --rm \
-#            -v ${COMP_DIR}:${COMP_DIR} \
+#            -v ${TESTS_DIR}:${TESTS_DIR} \
 #            -e ROBOT_HELM_V3=${ROBOT_HELM_V3} \
 #            -e ROBOT_DEBUG_LEVEL=${ROBOT_DEBUG_LEVEL} \
-#            -e COMP_DIR=${COMP_DIR} \
+#            -e TESTS_DIR=${TESTS_DIR} \
 #            ${ZSH_IMAGE} ${COMP_SCRIPT} zsh
 
 # ########################################
@@ -153,10 +153,10 @@ cd ${SCRIPT_DIR}/testdir
 #        yum install -y fish which
 # EOF
 # docker run --rm \
-#            -v ${COMP_DIR}:${COMP_DIR} \
+#            -v ${TESTS_DIR}:${TESTS_DIR} \
 #            -e ROBOT_HELM_V3=${ROBOT_HELM_V3} \
 #            -e ROBOT_DEBUG_LEVEL=${ROBOT_DEBUG_LEVEL} \
-#            -e COMP_DIR=${COMP_DIR} \
+#            -e TESTS_DIR=${TESTS_DIR} \
 #            ${FISH_IMAGE} ${COMP_SCRIPT} fish
 
 ########################################
@@ -171,7 +171,7 @@ if [ "$(uname)" == "Darwin" ]; then
     echo "======================================"
 
     # Copy the local testprogram to use
-    if ! cp ${BINARY_PATH_LOCAL}/${BINARY_NAME} ${COMP_DIR}/bin ; then
+    if ! cp ${BINARY_PATH_LOCAL}/${BINARY_NAME} ${TESTS_DIR}/bin ; then
         echo "Cannot find ${BINARY_NAME} under ${BINARY_PATH_LOCAL}/${BINARY_NAME} although it is what we need to test."
         exit 1
     fi

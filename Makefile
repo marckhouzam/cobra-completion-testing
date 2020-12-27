@@ -1,12 +1,28 @@
+TESTPROG_DIR := $(CURDIR)/testprog
+
 .PHONY: all
-all:
+all: build test
 
+.PHONY: build
 build:
-    make -f testprog/
+	@cd $(TESTPROG_DIR) && make
 
+.PHONY: bash
+bash: build
+	@tests/test-completion.sh bash
+
+.PHONY: fish
+fish: build
+	@tests/test-completion.sh fish
+
+.PHONY: zsh
+zsh: build
+	@tests/test-completion.sh zsh
+
+.PHONY: test
 test:
-	./test-all.sh
+	@tests/test-all.sh
 
 .PHONY: clean
 clean:
-	@rm -rf '$(BINDIR)' ./_dist
+	@cd $(TESTPROG_DIR) && make clean

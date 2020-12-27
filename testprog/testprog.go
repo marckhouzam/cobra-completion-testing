@@ -29,9 +29,21 @@ var rootCmd = &cobra.Command{
 	},
 }
 
+// ======================================================
+// Set of commands that filter on the 'toComplete' prefix
+// ======================================================
 var prefixCmd = &cobra.Command{
 	Use:   "prefix",
 	Short: "completions filtered on prefix",
+}
+
+var defaultCmdPrefix = &cobra.Command{
+	Use:   "default",
+	Short: "Directive: default",
+	ValidArgsFunction: func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return getCompsFilteredByPrefix(toComplete), cobra.ShellCompDirectiveDefault
+	},
+	Run: func(cmd *cobra.Command, args []string) {},
 }
 
 var noSpaceCmdPrefix = &cobra.Command{
@@ -61,15 +73,9 @@ var noFileNoSpaceCmdPrefix = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {},
 }
 
-var defaultCmdPrefix = &cobra.Command{
-	Use:   "default",
-	Short: "Directive: default",
-	ValidArgsFunction: func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return getCompsFilteredByPrefix(toComplete), cobra.ShellCompDirectiveDefault
-	},
-	Run: func(cmd *cobra.Command, args []string) {},
-}
-
+// ======================================================
+// Set of commands that do not filter on prefix
+// ======================================================
 var noPrefixCmd = &cobra.Command{
 	Use:   "noprefix",
 	Short: "completions NOT filtered on prefix",
@@ -111,6 +117,9 @@ var defaultCmdNoPrefix = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {},
 }
 
+// ======================================================
+// Command that completes on file extension
+// ======================================================
 var fileExtCmdPrefix = &cobra.Command{
 	Use:   "filext",
 	Short: "Directive: fileext",
@@ -120,6 +129,9 @@ var fileExtCmdPrefix = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {},
 }
 
+// ======================================================
+// Command that completes on the contents of the 'dir' directory
+// ======================================================
 var subDirCmdPrefix = &cobra.Command{
 	Use:   "subdir",
 	Short: "Directive: subdir",
@@ -129,6 +141,9 @@ var subDirCmdPrefix = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {},
 }
 
+// ======================================================
+// Command that returns an error on completion
+// ======================================================
 var errorCmdPrefix = &cobra.Command{
 	Use:   "error",
 	Short: "Directive: error",
