@@ -54,13 +54,14 @@ _completionTests_verifyCompletion() {
         echo "ERROR: \"$cmdLine\" should complete to \"$expected\" but we got \"$result\""
     fi
 
+   
     return $currentFailure
 }
 
 _completionTests_sort() {
    # We use printf instead of echo as the $1 could be -n which would be
    # interpreted as an argument to echo
-   printf "%s\n" "$1" | sed -e 's/^ *//' -e 's/ *$//' | tr ' ' '\n' | sort -n | tr '\n' ' '
+   printf "%s\n" "$1" | sed -e 's/^ *//' -e 's/ *$//' | tr ' ' '\n' | sort -n | tr '\n' ' ' | sed -e 's/^ *//' -e 's/ *$//'
 }
 
 # Find the completion function associated with the binary.
