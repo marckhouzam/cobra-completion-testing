@@ -41,24 +41,24 @@ _completionTests_verifyCompletion "testprog completion " "bash fish zsh"
 #################################################
 
 # Test ShellCompDirectiveDefault => File completion when no other completions
-_completionTests_verifyCompletion "testprog prefix default " "bear	an animal bearpaw	a dessert dog	a canine unicorn	mythical"
+_completionTests_verifyCompletion "testprog prefix default " "bear	an animal bearpaw	a dessert dog unicorn	mythical"
 _completionTests_verifyCompletion "testprog prefix default u" "unicorn	mythical"
 _completionTests_verifyCompletion "testprog prefix default f" "file"
 _completionTests_verifyCompletion "testprog prefix default z" ""
 
 # Test ShellCompDirectiveNoFileComp => No file completion even when there are no other completions
-_completionTests_verifyCompletion "testprog prefix nofile " "bear	an animal bearpaw	a dessert dog	a canine unicorn	mythical"
+_completionTests_verifyCompletion "testprog prefix nofile " "bear	an animal bearpaw	a dessert dog unicorn	mythical"
 _completionTests_verifyCompletion "testprog prefix nofile u" "unicorn	mythical"
 _completionTests_verifyCompletion "testprog prefix nofile f" ""
 _completionTests_verifyCompletion "testprog prefix nofile z" ""
 
 # Test ShellCompDirectiveNoSpace => No space even when there is a single completion
-_completionTests_verifyCompletion "testprog prefix nospace " "bear	an animal bearpaw	a dessert dog	a canine unicorn	mythical"
+_completionTests_verifyCompletion "testprog prefix nospace " "bear	an animal bearpaw	a dessert dog unicorn	mythical"
 _completionTests_verifyCompletion "testprog prefix nospace b" "bear	an animal bearpaw	a dessert"
 _completionTests_verifyCompletion "testprog prefix nospace u" "unicorn unicorn."
 _completionTests_verifyCompletion "testprog prefix nospace f" "file"
 _completionTests_verifyCompletion "testprog prefix nospace z" ""
-_completionTests_verifyCompletion "testprog prefix nofilenospace ""bear	an animal bearpaw	a dessert dog	a canine unicorn	mythical"
+_completionTests_verifyCompletion "testprog prefix nofilenospace ""bear	an animal bearpaw	a dessert dog unicorn	mythical"
 _completionTests_verifyCompletion "testprog prefix nofilenospace b""bear	an animal bearpaw	a dessert"
 _completionTests_verifyCompletion "testprog prefix nofilenospace u" "unicorn unicorn."
 _completionTests_verifyCompletion "testprog prefix nofilenospace f" ""
