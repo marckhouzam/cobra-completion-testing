@@ -1,26 +1,7 @@
 #!sh
 
-#############################################################################
-# This file holds all tests that apply to all shells (bash, zsh, fish)
-# It cannot use any if statements since their syntax is not portable
-# between shells.
-#
-# For tests that are specific to a shell, use the proper specific file.
-#############################################################################
-
-
-
-# Test logging using $BASH_COMP_DEBUG_FILE
-
-# Test completion from middle of line
-
-# Test --flag= form
-
-
-# Test when completions are not filtered by prefix.  NoSpace and FileComp should still work.
-
 echo "===================================================="
-echo Running completions tests on $UNAME with $SHELL_TYPE $version
+echo Running completions tests on $UNAME with fish $version
 echo "===================================================="
 
 # Must set the path again for Fish as the path gets modified when the shell starts
@@ -121,6 +102,8 @@ _completionTests_verifyCompletion "testprog --customComp=f" "--customComp=firstC
 # https://github.com/spf13/cobra/issues/1303
 _completionTests_verifyCompletion " testprog prefix default u" "unicorn	mythical"
 
+# Test debug printouts
+_completionTests_verifyDebug
 
 #############################
 # Disable descriptions
@@ -135,6 +118,7 @@ _completionTests_verifyCompletion "testprog --customComp " "firstComp secondComp
 _completionTests_verifyCompletion "testprog --customComp f" "firstComp forthComp"
 _completionTests_verifyCompletion "testprog --customComp=" "--customComp=firstComp --customComp=secondComp --customComp=forthComp"
 _completionTests_verifyCompletion "testprog --customComp=f" "--customComp=firstComp --customComp=forthComp"
+_completionTests_verifyDebug
 
 # This must be the last call.  It allows to exit with an exit code
 # that reflects the final status of all the tests.

@@ -1,4 +1,4 @@
-#!fish
+#!sh
 
 # Global variable to keep track of if a test has failed.
 set -g _completionTests_TEST_FAILED 0
@@ -32,4 +32,20 @@ function _completionTests_exit
    # Return the global result each time.  This allows for the very last call to
    # this method to return the correct success or failure code for the entire script
    return $_completionTests_TEST_FAILED
+end
+
+# Test logging using $BASH_COMP_DEBUG_FILE
+function _completionTests_verifyDebug
+   set debugfile /tmp/comp-tests.fish.debug
+   rm -f $debugfile
+   set -g BASH_COMP_DEBUG_FILE $debugfile
+   _completionTests_verifyCompletion "testprog comp" "completion"
+   if not test -s $debugfile
+      # File should not be empty
+      echo "ERROR: No debug logs were printed to $debugfile"
+      set _completionTests_TEST_FAILED 1
+   else
+      echo "SUCCESS: Debug logs were printed to $debugfile"
+   end
+   set -e BASH_COMP_DEBUG_FILE
 end
