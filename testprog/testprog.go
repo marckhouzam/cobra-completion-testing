@@ -9,7 +9,7 @@ import (
 )
 
 var (
-	completions = []string{"bear\tan animal", "bearpaw\ta dessert", "cat\ta feline", "dog\ta canine"}
+	completions = []string{"bear\tan animal", "bearpaw\ta dessert", "dog\ta canine", "unicorn\tmythical"}
 )
 
 func getCompsFilteredByPrefix(prefix string) []string {

@@ -1,15 +1,5 @@
 #!fish
 
-echo "===================================================="
-echo Running completions tests on $UNAME with $SHELL_TYPE $version
-echo "===================================================="
-
-# Must set the path again for Fish as the path gets modified when the shell starts
-set PATH $TESTPROG_DIR/bin:$PATH
-
-# Setup completion
-testprog completion fish --no-descriptions | source
-
 # Global variable to keep track of if a test has failed.
 set -g _completionTests_TEST_FAILED 0
 
@@ -22,9 +12,6 @@ function _completionTests_verifyCompletion
     set currentFailure 0
 
     set result (complete --do-complete "$cmdLine")
-
-    set result (_completionTests_sort "$result")
-    set expected (_completionTests_sort "$expected")
 
     if test "$result" = "$expected"
         set resultOut "$result"
@@ -39,10 +26,6 @@ function _completionTests_verifyCompletion
     end
 
     return $currentFailure
-end
-
-function _completionTests_sort
-   string trim $argv[1] | tr ' ' '\n' | sort -n | tr '\n' ' ' | string trim
 end
 
 function _completionTests_exit
