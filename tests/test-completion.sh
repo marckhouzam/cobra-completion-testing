@@ -13,8 +13,7 @@ case "$SHELL_TYPE" in
     exit 1
     ;;
 bash|fish|zsh)
-    export UNAME=$(uname)
-    $SHELL_TYPE -c "source $TESTS_DIR/common/run.all"
+    $SHELL_TYPE -c "source $TESTS_DIR/$SHELL_TYPE/comp-tests.$SHELL_TYPE"
     ;;
 *)
     echo "Invalid shell to test: $SHELL_TYPE"

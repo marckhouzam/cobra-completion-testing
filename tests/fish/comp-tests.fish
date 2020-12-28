@@ -1,8 +1,13 @@
 #!sh
 
 echo "===================================================="
-echo Running completions tests on $UNAME with fish $version
+echo Running completions tests on (uname) with fish $version
 echo "===================================================="
+
+cd $TESTING_DIR
+
+# Source the testing logic
+source $TESTS_DIR/fish/comp-test-lib.fish
 
 # Must set the path again for Fish as the path gets modified when the shell starts
 set PATH $TESTPROG_DIR/bin:$PATH
@@ -39,8 +44,8 @@ _completionTests_verifyCompletion "testprog prefix nospace b" "bear	an animal be
 _completionTests_verifyCompletion "testprog prefix nospace u" "unicorn unicorn."
 _completionTests_verifyCompletion "testprog prefix nospace f" "file"
 _completionTests_verifyCompletion "testprog prefix nospace z" ""
-_completionTests_verifyCompletion "testprog prefix nofilenospace ""bear	an animal bearpaw	a dessert dog unicorn	mythical"
-_completionTests_verifyCompletion "testprog prefix nofilenospace b""bear	an animal bearpaw	a dessert"
+_completionTests_verifyCompletion "testprog prefix nofilenospace " "bear	an animal bearpaw	a dessert dog unicorn	mythical"
+_completionTests_verifyCompletion "testprog prefix nofilenospace b" "bear	an animal bearpaw	a dessert"
 _completionTests_verifyCompletion "testprog prefix nofilenospace u" "unicorn unicorn."
 _completionTests_verifyCompletion "testprog prefix nofilenospace f" ""
 _completionTests_verifyCompletion "testprog prefix nofilenospace z" ""
@@ -77,10 +82,12 @@ _completionTests_verifyCompletion "testprog noprefix nofilenospace z" ""
 # Other directives
 #################################################
 # Test ShellCompDirectiveFilterFileExt => Not supported for fish, file completion instead
-_completionTests_verifyCompletion "testprog fileext yaml" "setup.yaml"
+_completionTests_verifyCompletion "testprog fileext f" "file"
+_completionTests_verifyCompletion "testprog fileext z" ""
 
 # Test ShellCompDirectiveFilterDirs => Not supported for fish, file completion instead
-_completionTests_verifyCompletion "testprog subdir dir" "dir/"
+_completionTests_verifyCompletion "testprog subdir f" "file"
+_completionTests_verifyCompletion "testprog subdir z" ""
 
 # Test ShellCompDirectiveError => File completion only
 _completionTests_verifyCompletion "testprog error f" "file"

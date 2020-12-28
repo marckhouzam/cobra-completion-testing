@@ -121,7 +121,7 @@ var defaultCmdNoPrefix = &cobra.Command{
 // Command that completes on file extension
 // ======================================================
 var fileExtCmdPrefix = &cobra.Command{
-	Use:   "filext",
+	Use:   "fileext",
 	Short: "Directive: fileext",
 	ValidArgsFunction: func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return []string{"yaml", "json"}, cobra.ShellCompDirectiveFilterFileExt

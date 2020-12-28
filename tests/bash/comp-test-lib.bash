@@ -1,24 +1,11 @@
 #!bash
 
-echo "===================================================="
-echo Running completions tests on $UNAME with $SHELL_TYPE $BASH_VERSION
-echo "===================================================="
-
 # Setup bash_completion package
 bashCompletionScript="/usr/share/bash-completion/bash_completion"
 if [ $(uname) = "Darwin" ]; then
    bashCompletionScript="/usr/local/etc/bash_completion"
 fi
 source ${bashCompletionScript}
-
-# Put test program on PATH
-export PATH=$TESTPROG_DIR/bin:$PATH
-
-# Setup completion of testprog
-# Don't use the new source <() form as it does not work with bash v3
-source /dev/stdin <<- EOF
-   $(testprog completion ${SHELL_TYPE})
-EOF
 
 # Enable aliases to work even though we are in a script (non-interactive shell).
 # This allows to test completion with aliases.
