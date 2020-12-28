@@ -154,17 +154,17 @@ var errorCmdPrefix = &cobra.Command{
 }
 
 func setFlags() {
+	rootCmd.Flags().String("customComp", "", "test custom comp for flags")
+	rootCmd.RegisterFlagCompletionFunc("customComp", func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return []string{"firstComp\tthe first value", "secondComp\tthe second value", "forthComp"}, cobra.ShellCompDirectiveNoFileComp
+	})
+
 	// rootCmd.Flags().String("theme", "", "theme to use (located in /themes/THEMENAME/)")
 	// rootCmd.Flags().SetAnnotation("theme", cobra.BashCompSubdirsInDir, []string{"themes"})
 
 	// rootCmd.Flags().String("theme2", "", "theme to use (located in /themes/THEMENAME/)")
 	// rootCmd.RegisterFlagCompletionFunc("theme2", func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 	// 	return []string{"themes"}, cobra.ShellCompDirectiveFilterDirs
-	// })
-
-	// rootCmd.Flags().String("customComp", "", "test custom comp for flags")
-	// rootCmd.RegisterFlagCompletionFunc("customComp", func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-	// 	return []string{"firstComp\tthe first value", "secondComp\tthe second value", "forthComp\tthe forth value"}, cobra.ShellCompDirectiveNoFileComp
 	// })
 
 	// rootCmd.Flags().StringP("file", "f", "", "list files")
