@@ -99,3 +99,7 @@ _completionTests_verifyCompletion "testprog error z" ""
 # Test when there is a space before the binary name
 # https://github.com/spf13/cobra/issues/1303
 _completionTests_verifyCompletion " testprog prefix default c" "cat"
+
+# This must be the last call.  It allows to exit with an exit code
+# that reflects the final status of all the tests.
+_completionTests_exit
