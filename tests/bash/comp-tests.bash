@@ -5,21 +5,14 @@ echo Running completions tests on $(uname) with bash $BASH_VERSION
 echo "===================================================="
 
 cd $TESTING_DIR
+export PATH=$TESTPROG_DIR/bin:$PATH
 
 # Source the testing logic
 source $TESTS_DIR/bash/comp-test-lib.bash
 
-export PATH=$TESTPROG_DIR/bin:$PATH
-
-# Setup completion of testprog
-# Don't use the new source <() form as it does not work with bash v3
-source /dev/stdin <<- EOF
-   $(testprog completion bash)
-EOF
-
 # Basic first level commands (static completion)
 _completionTests_verifyCompletion "testprog comp" "completion"
-_completionTests_verifyCompletion "testprog help comp" "completion"
+_completionTests_verifyCompletion "testprog help comp" "completion" nofile
 _completionTests_verifyCompletion "testprog completion " "bash fish zsh"
 
 #################################################
@@ -33,22 +26,22 @@ _completionTests_verifyCompletion "testprog prefix default f" ""
 _completionTests_verifyCompletion "testprog prefix default z" ""
 
 # Test ShellCompDirectiveNoFileComp => No file completion even when there are no other completions
-_completionTests_verifyCompletion "testprog prefix nofile " "bear bearpaw dog unicorn"
-_completionTests_verifyCompletion "testprog prefix nofile u" "unicorn"
-_completionTests_verifyCompletion "testprog prefix nofile f" ""
-_completionTests_verifyCompletion "testprog prefix nofile z" ""
+_completionTests_verifyCompletion "testprog prefix nofile " "bear bearpaw dog unicorn" nofile
+_completionTests_verifyCompletion "testprog prefix nofile u" "unicorn" nofile
+_completionTests_verifyCompletion "testprog prefix nofile f" "" nofile
+_completionTests_verifyCompletion "testprog prefix nofile z" "" nofile
 
 # Test ShellCompDirectiveNoSpace => No space even when there is a single completion
-_completionTests_verifyCompletion "testprog prefix nospace " "bear bearpaw dog unicorn"
-_completionTests_verifyCompletion "testprog prefix nospace b" "bear bearpaw"
-_completionTests_verifyCompletion "testprog prefix nospace u" "unicorn"
-_completionTests_verifyCompletion "testprog prefix nospace f" ""
-_completionTests_verifyCompletion "testprog prefix nospace z" ""
-_completionTests_verifyCompletion "testprog prefix nofilenospace " "bear bearpaw dog unicorn"
-_completionTests_verifyCompletion "testprog prefix nofilenospace b" "bear bearpaw"
-_completionTests_verifyCompletion "testprog prefix nofilenospace u" "unicorn"
-_completionTests_verifyCompletion "testprog prefix nofilenospace f" ""
-_completionTests_verifyCompletion "testprog prefix nofilenospace z" ""
+_completionTests_verifyCompletion "testprog prefix nospace " "bear bearpaw dog unicorn" nospace
+_completionTests_verifyCompletion "testprog prefix nospace b" "bear bearpaw" nospace
+_completionTests_verifyCompletion "testprog prefix nospace u" "unicorn" nospace
+_completionTests_verifyCompletion "testprog prefix nospace f" "" nospace
+_completionTests_verifyCompletion "testprog prefix nospace z" "" nospace
+_completionTests_verifyCompletion "testprog prefix nofilenospace " "bear bearpaw dog unicorn" nofile nospace
+_completionTests_verifyCompletion "testprog prefix nofilenospace b" "bear bearpaw" nofile nospace
+_completionTests_verifyCompletion "testprog prefix nofilenospace u" "unicorn" nofile nospace
+_completionTests_verifyCompletion "testprog prefix nofilenospace f" "" nofile nospace
+_completionTests_verifyCompletion "testprog prefix nofilenospace z" "" nofile nospace
 
 #################################################
 # Completions are NOT filtered by prefix by the program
@@ -60,19 +53,19 @@ _completionTests_verifyCompletion "testprog noprefix default f" ""
 _completionTests_verifyCompletion "testprog noprefix default z" ""
 
 # Test ShellCompDirectiveNoFileComp => No file completion even when there are no other completions
-_completionTests_verifyCompletion "testprog noprefix nofile u" "unicorn"
-_completionTests_verifyCompletion "testprog noprefix nofile f" ""
-_completionTests_verifyCompletion "testprog noprefix nofile z" ""
+_completionTests_verifyCompletion "testprog noprefix nofile u" "unicorn" nofile
+_completionTests_verifyCompletion "testprog noprefix nofile f" "" nofile
+_completionTests_verifyCompletion "testprog noprefix nofile z" "" nofile
 
 # Test ShellCompDirectiveNoSpace => No space even when there is a single completion
-_completionTests_verifyCompletion "testprog noprefix nospace b" "bear bearpaw"
-_completionTests_verifyCompletion "testprog noprefix nospace u" "unicorn"
-_completionTests_verifyCompletion "testprog noprefix nospace f" ""
-_completionTests_verifyCompletion "testprog noprefix nospace z" ""
-_completionTests_verifyCompletion "testprog noprefix nofilenospace b" "bear bearpaw"
-_completionTests_verifyCompletion "testprog noprefix nofilenospace u" "unicorn"
-_completionTests_verifyCompletion "testprog noprefix nofilenospace f" ""
-_completionTests_verifyCompletion "testprog noprefix nofilenospace z" ""
+_completionTests_verifyCompletion "testprog noprefix nospace b" "bear bearpaw" nospace
+_completionTests_verifyCompletion "testprog noprefix nospace u" "unicorn" nospace
+_completionTests_verifyCompletion "testprog noprefix nospace f" "" nospace
+_completionTests_verifyCompletion "testprog noprefix nospace z" "" nospace
+_completionTests_verifyCompletion "testprog noprefix nofilenospace b" "bear bearpaw" nofile nospace
+_completionTests_verifyCompletion "testprog noprefix nofilenospace u" "unicorn" nofile nospace
+_completionTests_verifyCompletion "testprog noprefix nofilenospace f" "" nofile nospace
+_completionTests_verifyCompletion "testprog noprefix nofilenospace z" "" nofile nospace
 
 #################################################
 # Other directives
@@ -95,11 +88,11 @@ _completionTests_verifyCompletion "testprog error u" ""
 #################################################
 # Flags
 #################################################
-_completionTests_verifyCompletion "testprog --custom" "--customComp --customComp="
-_completionTests_verifyCompletion "testprog --customComp " "firstComp secondComp forthComp"
-_completionTests_verifyCompletion "testprog --customComp f" "firstComp forthComp"
-_completionTests_verifyCompletion "testprog --customComp=" "firstComp secondComp forthComp"
-_completionTests_verifyCompletion "testprog --customComp=f" "firstComp forthComp"
+_completionTests_verifyCompletion "testprog --custom" "--customComp --customComp=" nospace
+_completionTests_verifyCompletion "testprog --customComp " "firstComp secondComp forthComp" nofile
+_completionTests_verifyCompletion "testprog --customComp f" "firstComp forthComp" nofile
+_completionTests_verifyCompletion "testprog --customComp=" "firstComp secondComp forthComp" nofile
+_completionTests_verifyCompletion "testprog --customComp=f" "firstComp forthComp" nofile
 
 #################################################
 # Special cases

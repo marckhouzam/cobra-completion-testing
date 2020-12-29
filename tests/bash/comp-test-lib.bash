@@ -7,6 +7,40 @@ if [ $(uname) = "Darwin" ]; then
 fi
 source ${bashCompletionScript}
 
+# Setup completion of testprog
+# Don't use the new source <() form as it does not work with bash v3
+# Normally, compopt is a builtin, and the script checks that it is a
+# builtin do disable it if we are in bash3 (where compopt does not exist).
+# We replace 'builtin' with 'function' because we cannot use the native
+# compopt since we are explicitely calling the completion code instead
+# of from within a real completion environment.
+source /dev/stdin <<- EOF
+   $(testprog completion bash | sed s/builtin/function/g)
+EOF
+
+_compTests_nofile=/tmp/comptests.bash.nofile
+_compTests_nospace=/tmp/comptests.bash.nospace
+
+# compopt cannot be used outside of real shell
+# completion.  What we do instead is keep track
+# of what options are chosen, to check them.
+compopt() {
+   if [ "$*" = "+o default" ]; then
+      touch $_compTests_nofile
+   elif [ "$*" = "-o default" ]; then
+      rm -f $_compTests_nofile
+   elif [ "$*" = "-o nospace" ]; then
+      touch $_compTests_nospace
+   elif [ "$*" = "+o nospace" ]; then
+      rm -f $_compTests_nospace
+   fi
+}
+
+_completionTests_reset() {
+   rm -f $_compTests_nofile
+   rm -f $_compTests_nospace
+}
+
 # Enable aliases to work even though we are in a script (non-interactive shell).
 # This allows to test completion with aliases.
 # Only needed for bash; zsh does this automatically.
@@ -19,30 +53,63 @@ _completionTests_TEST_FAILED=0
 #    $1 is the command line that should be completed
 #    $2 is the expected result of the completion
 _completionTests_verifyCompletion() {
-    local cmdLine=$1
-    local expected=$2
-    local currentFailure=0
+   _completionTests_reset
 
-    result=$(_completionTests_complete "${cmdLine}")
+   local cmdLine=$1
+   local expected=$2
+   local currentFailure=0
 
-    result=$(_completionTests_sort "$result")
-    expected=$(_completionTests_sort "$expected")
+   local nofile=0
+   local nospace=0
+   case "$3" in
+   "")
+      ;;
+   nofile)
+      nofile=1
+      case "$4" in
+      "")
+         ;;
+      nospace)
+         nospace=1
+         ;;
+      *)
+         echo "Invalid directive: $4"
+         exit 1
+         ;;
+      esac 
+      ;;
+   nospace)
+      nospace=1
+      ;;
+   *)
+      echo "Invalid directive: $3"
+      exit 1
+      ;;
+   esac 
 
-    if [ "$result" = "$expected" ]; then
-        # Truncate result to save space
-        resultOut="$result"
-        if [ "${#result}" -gt 50 ]; then
-            resultOut="${result:0:50} <truncated>"
-        fi
-        echo "SUCCESS: \"$cmdLine\" completes to \"$resultOut\""
-    else
-        _completionTests_TEST_FAILED=1
-        currentFailure=1
-        echo "ERROR: \"$cmdLine\" should complete to \"$expected\" but we got \"$result\""
-    fi
+   result=$(_completionTests_complete "${cmdLine}")
 
-   
-    return $currentFailure
+   result=$(_completionTests_sort "$result")
+   expected=$(_completionTests_sort "$expected")
+
+   if [ "$result" = "$expected" ]; then
+      if ! _completionTests_checkDirective $nofile $nospace "$cmdLine"; then
+         _completionTests_TEST_FAILED=1
+         return 1
+      fi
+
+      # Truncate result to save space
+      resultOut="$result"
+      if [ "${#result}" -gt 50 ]; then
+         resultOut="${result:0:50} <truncated>"
+      fi
+      echo "SUCCESS: \"$cmdLine\" completes to \"$resultOut\""
+      return 0
+   fi
+
+   _completionTests_TEST_FAILED=1
+   echo "ERROR: \"$cmdLine\" should complete to \"$expected\" but we got \"$result\""
+   return 1
 }
 
 _completionTests_sort() {
@@ -56,9 +123,7 @@ _completionTests_sort() {
 # us to find the existing completion function name.
 _completionTests_findCompletionFunction() {
     binary=$(basename $1)
-    # The below must work for both bash and zsh
-    # which is why we use grep as complete -p $binary only works for bash
-    local out=($(complete -p | grep ${binary}$))
+    local out=($(complete -p ${binary}))
     local returnNext=0
     for i in ${out[@]}; do
        if [ $returnNext -eq 1 ]; then
@@ -104,7 +169,7 @@ _completionTests_exit() {
 
 # Test logging using $BASH_COMP_DEBUG_FILE
 _completionTests_verifyDebug() {
-   debugfile=/tmp/comp-tests.bash.debug
+   debugfile=/tmp/comptests.bash.debug
    rm -f $debugfile
    export BASH_COMP_DEBUG_FILE=$debugfile
    _completionTests_verifyCompletion "testprog comp" "completion"
@@ -118,13 +183,24 @@ _completionTests_verifyDebug() {
    unset BASH_COMP_DEBUG_FILE
 }
 
-# compopt, which is only available for bash 4, I believe,
-# prints an error when it is being called outside of real shell
-# completion.  Since it doesn't work anyway in our case, let's
-# disable it to avoid the error printouts.
-# Impacts are limited to completion of flags and even then
-# for bash 3, it is not even available.
-compopt() {
-   :
-}
+_completionTests_checkDirective() {
+   local requestnofile=$1
+   local requestnospace=$2
+   local cmdLine=$3
 
+   local realnofile=0
+   [ -f $_compTests_nofile ] && realnofile=1
+   local realnospace=0
+   [ -f $_compTests_nospace ] && realnospace=1
+
+   if [ $requestnofile -ne $realnofile ]; then
+      echo "ERROR: \"$cmdLine\" expected nofile=$requestnofile but got nofile=$realnofile"
+      return 1
+   fi
+   if [ $requestnospace -ne $realnospace ]; then
+      echo "ERROR: \"$cmdLine\" expected nospace=$requestnospace but got nospace=$realnospace"
+      return 1
+   fi
+
+   return 0
+}

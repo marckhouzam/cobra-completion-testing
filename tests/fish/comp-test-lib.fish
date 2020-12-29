@@ -36,7 +36,7 @@ end
 
 # Test logging using $BASH_COMP_DEBUG_FILE
 function _completionTests_verifyDebug
-   set debugfile /tmp/comp-tests.fish.debug
+   set debugfile /tmp/comptests.fish.debug
    rm -f $debugfile
    set -g BASH_COMP_DEBUG_FILE $debugfile
    _completionTests_verifyCompletion "testprog comp" "completion"
