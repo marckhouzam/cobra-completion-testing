@@ -77,20 +77,20 @@ _completionTests_verifyCompletion "testprog noprefix nofilenospace z" ""
 #################################################
 # Other directives
 #################################################
-# Test ShellCompDirectiveFilterFileExt => Not supported for fish, file completion instead
-_completionTests_verifyCompletion "testprog fileext yaml" "setup.yaml"
+# Test ShellCompDirectiveFilterFileExt
+_completionTests_verifyCompletion "testprog fileext setup" "setup.json setup.yaml"
 
-# Test ShellCompDirectiveFilterDirs => Not supported for fish, file completion instead
-_completionTests_verifyCompletion "testprog subdir dir" "dir/"
+# Test ShellCompDirectiveFilterDirs
+_completionTests_verifyCompletion "testprog dir " "dir dir2 dir3"
+_completionTests_verifyCompletion "testprog subdir dir" "dir.json dir.txt dir.yaml"
 
 # Test ShellCompDirectiveError => File completion only
-_completionTests_verifyCompletion "testprog error f" "file"
-_completionTests_verifyCompletion "testprog error z" ""
+_completionTests_verifyCompletion "testprog error u" ""
 
 #################################################
 # Flags
 #################################################
-_completionTests_verifyCompletion "testprog --custom" "--customComp	test custom comp for flags"
+_completionTests_verifyCompletion "testprog --custom" "--customComp --customComp="
 _completionTests_verifyCompletion "testprog --customComp " "firstComp secondComp forthComp"
 _completionTests_verifyCompletion "testprog --customComp f" "firstComp forthComp"
 _completionTests_verifyCompletion "testprog --customComp=" "firstComp secondComp forthComp"

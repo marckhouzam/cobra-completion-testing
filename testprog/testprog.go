@@ -130,9 +130,21 @@ var fileExtCmdPrefix = &cobra.Command{
 }
 
 // ======================================================
-// Command that completes on the contents of the 'dir' directory
+// Command that completes on the directories within the current directory
 // ======================================================
-var subDirCmdPrefix = &cobra.Command{
+var dirCmd = &cobra.Command{
+	Use:   "dir",
+	Short: "Directive: subdir",
+	ValidArgsFunction: func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return nil, cobra.ShellCompDirectiveFilterDirs
+	},
+	Run: func(cmd *cobra.Command, args []string) {},
+}
+
+// ======================================================
+// Command that completes on the directories within the 'dir' directory
+// ======================================================
+var subDirCmd = &cobra.Command{
 	Use:   "subdir",
 	Short: "Directive: subdir",
 	ValidArgsFunction: func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -144,7 +156,7 @@ var subDirCmdPrefix = &cobra.Command{
 // ======================================================
 // Command that returns an error on completion
 // ======================================================
-var errorCmdPrefix = &cobra.Command{
+var errorCmd = &cobra.Command{
 	Use:   "error",
 	Short: "Directive: error",
 	ValidArgsFunction: func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -227,8 +239,9 @@ func main() {
 		prefixCmd,
 		noPrefixCmd,
 		fileExtCmdPrefix,
-		subDirCmdPrefix,
-		errorCmdPrefix,
+		dirCmd,
+		subDirCmd,
+		errorCmd,
 	)
 
 	prefixCmd.AddCommand(

@@ -102,6 +102,22 @@ _completionTests_exit() {
    return $_completionTests_TEST_FAILED
 }
 
+# Test logging using $BASH_COMP_DEBUG_FILE
+_completionTests_verifyDebug() {
+   debugfile=/tmp/comp-tests.bash.debug
+   rm -f $debugfile
+   export BASH_COMP_DEBUG_FILE=$debugfile
+   _completionTests_verifyCompletion "testprog comp" "completion"
+   if ! test -s $debugfile; then
+      # File should not be empty
+      echo "ERROR: No debug logs were printed to $debugfile"
+      _completionTests_TEST_FAILED=1
+   else
+      echo "SUCCESS: Debug logs were printed to $debugfile"
+   fi
+   unset BASH_COMP_DEBUG_FILE
+}
+
 # compopt, which is only available for bash 4, I believe,
 # prints an error when it is being called outside of real shell
 # completion.  Since it doesn't work anyway in our case, let's
@@ -111,3 +127,4 @@ _completionTests_exit() {
 compopt() {
    :
 }
+

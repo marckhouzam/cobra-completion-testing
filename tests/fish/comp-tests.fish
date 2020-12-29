@@ -86,6 +86,7 @@ _completionTests_verifyCompletion "testprog fileext f" "file"
 _completionTests_verifyCompletion "testprog fileext z" ""
 
 # Test ShellCompDirectiveFilterDirs => Not supported for fish, file completion instead
+_completionTests_verifyCompletion "testprog dir f" "file"
 _completionTests_verifyCompletion "testprog subdir f" "file"
 _completionTests_verifyCompletion "testprog subdir z" ""
 
