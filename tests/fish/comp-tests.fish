@@ -89,6 +89,10 @@ _completionTests_verifyCompletion "testprog fileext z" ""
 _completionTests_verifyCompletion "testprog dir f" "file"
 _completionTests_verifyCompletion "testprog subdir f" "file"
 _completionTests_verifyCompletion "testprog subdir z" ""
+_completionTests_verifyCompletion "testprog --theme f" "file"
+_completionTests_verifyCompletion "testprog --theme z" ""
+_completionTests_verifyCompletion "testprog --theme=f" "--theme=file"
+_completionTests_verifyCompletion "testprog --theme=z" ""
 
 # Test ShellCompDirectiveError => File completion only
 _completionTests_verifyCompletion "testprog error f" "file"

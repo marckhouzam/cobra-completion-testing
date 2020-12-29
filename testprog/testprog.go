@@ -171,8 +171,8 @@ func setFlags() {
 		return []string{"firstComp\tthe first value", "secondComp\tthe second value", "forthComp"}, cobra.ShellCompDirectiveNoFileComp
 	})
 
-	// rootCmd.Flags().String("theme", "", "theme to use (located in /themes/THEMENAME/)")
-	// rootCmd.Flags().SetAnnotation("theme", cobra.BashCompSubdirsInDir, []string{"themes"})
+	rootCmd.Flags().String("theme", "", "theme to use (located in /dir/THEMENAME/)")
+	rootCmd.Flags().SetAnnotation("theme", cobra.BashCompSubdirsInDir, []string{"dir"})
 
 	// rootCmd.Flags().String("theme2", "", "theme to use (located in /themes/THEMENAME/)")
 	// rootCmd.RegisterFlagCompletionFunc("theme2", func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {

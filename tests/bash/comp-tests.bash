@@ -81,8 +81,13 @@ _completionTests_verifyCompletion "testprog noprefix nofilenospace z" ""
 _completionTests_verifyCompletion "testprog fileext setup" "setup.json setup.yaml"
 
 # Test ShellCompDirectiveFilterDirs
-_completionTests_verifyCompletion "testprog dir " "dir dir2 dir3"
-_completionTests_verifyCompletion "testprog subdir dir" "dir.json dir.txt dir.yaml"
+_completionTests_verifyCompletion "testprog dir di" "dir dir2"
+_completionTests_verifyCompletion "testprog subdir " "jsondir txtdir yamldir"
+_completionTests_verifyCompletion "testprog subdir j" "jsondir"
+_completionTests_verifyCompletion "testprog --theme " "jsondir txtdir yamldir"
+_completionTests_verifyCompletion "testprog --theme t" "txtdir"
+_completionTests_verifyCompletion "testprog --theme=" "jsondir txtdir yamldir"
+_completionTests_verifyCompletion "testprog --theme=t" "txtdir"
 
 # Test ShellCompDirectiveError => File completion only
 _completionTests_verifyCompletion "testprog error u" ""
