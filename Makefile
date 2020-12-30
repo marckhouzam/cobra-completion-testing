@@ -1,27 +1,33 @@
 TESTPROG_DIR := $(CURDIR)/testprog
 
 .PHONY: all
-all: build test
+all: clean build test
 
 .PHONY: build
 build:
 	@cd $(TESTPROG_DIR) && make
 
 .PHONY: bash
-bash: build
-	@tests/test-completion.sh bash
+bash: clean build
+	@echo "NOT READY"
 
 .PHONY: fish
-fish: build
-	@tests/test-completion.sh fish
-
-.PHONY: zsh
-zsh: build
-	@tests/test-completion.sh zsh
+fish: clean build
+	@echo "NOT READY"
 
 .PHONY: test
-test:
-	@tests/test-all.sh
+test: clean build
+	@echo "NOT READY"
+
+.PHONY: macos
+macos: mac
+
+PHONY: mac
+mac:
+	@cd $(TESTPROG_DIR) && make clean
+	@cd $(TESTPROG_DIR) && make
+	@tests/test-completion.sh bash
+	@tests/test-completion.sh fish
 
 .PHONY: clean
 clean:
