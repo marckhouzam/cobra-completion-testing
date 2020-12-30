@@ -1,6 +1,6 @@
 #!/usr/bin/env sh
 
-BASE_DIR=$(cd $(dirname "${BASH_SOURCE[0]}")/..; pwd)
+BASE_DIR=${BASE_DIR:-$(cd $(dirname "${BASH_SOURCE[0]}")/..; pwd)}
 
 export TESTS_DIR=${TESTS_DIR:-${BASE_DIR}/tests}
 export TESTPROG_DIR=${TESTPROG_DIR:-${BASE_DIR}/testprog}

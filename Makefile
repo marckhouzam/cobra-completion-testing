@@ -7,13 +7,17 @@ all: clean build test
 build:
 	@cd $(TESTPROG_DIR) && make
 
+.PHONY: build-linux
+build-linux:
+	@cd $(TESTPROG_DIR) && make build-linux
+
 .PHONY: bash
 bash: clean build
 	@echo "NOT READY"
 
 .PHONY: fish
 fish: clean build
-	@echo "NOT READY"
+	@tests/test-all.sh fish
 
 .PHONY: test
 test: clean build

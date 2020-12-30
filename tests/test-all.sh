@@ -9,41 +9,55 @@ fi
 
 # Fail as soon as there is an error
 set -e
-SCRIPT_DIR=$(cd $(dirname "${BASH_SOURCE[0]}")/..; pwd)
+BASE_DIR=$(cd $(dirname "${BASH_SOURCE[0]}")/..; pwd)
 
-BINARY_NAME=testprog
-BINARY_ROOT=${SCRIPT_DIR}/testprog/bin
-BINARY_PATH_DOCKER=${BINARY_ROOT}/../dist/linux-amd64
-BINARY_PATH_LOCAL=${BINARY_ROOT}
+SHELL_TYPE=$1
 
-# Only use the -d flag for mktemp as many other flags don't
-# work on every plateform
-OUTPUT_DIR="${OUTPUT_DIR:-${PWD}}"
-export TESTS_DIR=$(mktemp -d ${OUTPUT_DIR}/cobra-completion-testing.XXXXXX)
-trap "rm -rf ${TESTS_DIR}" EXIT
+case "$SHELL_TYPE" in
+all|bash|fish|zsh)
+    ;;
+"")
+    SHELL_TYPE=all
+    ;;
+*)
+    echo "Invalid shell to test: $SHELL_TYPE.  Can be: all|bash|fish|zsh"
+    exit 1
+    ;;
+esac
 
-COMP_SCRIPT_NAME=test-completion.sh
-COMP_SCRIPT=${TESTS_DIR}/common/${COMP_SCRIPT_NAME}
-
-rm -rf ${TESTS_DIR}
-mkdir -p ${TESTS_DIR}/bin
-cp -a ${SCRIPT_DIR}/tests/ ${TESTS_DIR}
-
-CHECK_BINARY_PATH="$(cd ${BINARY_PATH_DOCKER} && pwd)/${BINARY_NAME}"
-if [[ ! -f ${CHECK_BINARY_PATH} ]] && [[ -L ${CHECK_BINARY_PATH} ]]; then
-    echo "These tests require a binary located at ${CHECK_BINARY_PATH}"
-    echo "Hint: Run 'make build-cross' in a clone of the repo"
-    exit 2
-fi
-cp ${CHECK_BINARY_PATH} ${TESTS_DIR}/bin
-
-# Now run all tests, even if there is a failure.
-# But remember if there was any failure to report it at the end.
-set +e
-GOT_FAILURE=0
-trap "GOT_FAILURE=1" ERR
-
-cd ${SCRIPT_DIR}/testdir
+#BINARY_NAME=testprog
+#BINARY_ROOT=${BASE_DIR}/testprog/bin
+#BINARY_PATH_DOCKER=${BINARY_ROOT}/../dist/linux-amd64
+#BINARY_PATH_LOCAL=${BINARY_ROOT}
+#
+## Only use the -d flag for mktemp as many other flags don't
+## work on every plateform
+#OUTPUT_DIR="${OUTPUT_DIR:-${PWD}}"
+#export TESTS_DIR=$(mktemp -d ${OUTPUT_DIR}/cobra-completion-testing.XXXXXX)
+#trap "rm -rf ${TESTS_DIR}" EXIT
+#
+#COMP_SCRIPT_NAME=test-completion.sh
+#COMP_SCRIPT=${TESTS_DIR}/common/${COMP_SCRIPT_NAME}
+#
+#rm -rf ${TESTS_DIR}
+#mkdir -p ${TESTS_DIR}/bin
+#cp -a ${BASE_DIR}/tests/ ${TESTS_DIR}
+#
+#CHECK_BINARY_PATH="$(cd ${BINARY_PATH_DOCKER} && pwd)/${BINARY_NAME}"
+#if [[ ! -f ${CHECK_BINARY_PATH} ]] && [[ -L ${CHECK_BINARY_PATH} ]]; then
+#    echo "These tests require a binary located at ${CHECK_BINARY_PATH}"
+#    echo "Hint: Run 'make build-cross' in a clone of the repo"
+#    exit 2
+#fi
+#cp ${CHECK_BINARY_PATH} ${TESTS_DIR}/bin
+#
+## Now run all tests, even if there is a failure.
+## But remember if there was any failure to report it at the end.
+#set +e
+#GOT_FAILURE=0
+#trap "GOT_FAILURE=1" ERR
+#
+#cd ${BASE_DIR}/testdir
 
 # ########################################
 # # Bash 4 completion tests
@@ -141,24 +155,30 @@ cd ${SCRIPT_DIR}/testdir
 #            -e TESTS_DIR=${TESTS_DIR} \
 #            ${ZSH_IMAGE} ${COMP_SCRIPT} zsh
 
-# ########################################
-# # Fish completion tests
-# ########################################
-# FISH_IMAGE=completion-fish
+########################################
+# Fish completion tests
+########################################
+if [ $SHELL_TYPE = fish ] || [ $SHELL_TYPE = all ]; then
+   make build-linux
 
-# docker build -t ${FISH_IMAGE} - <<- EOF
-#    FROM centos
-#    RUN cd /etc/yum.repos.d/ && \
-#        curl -O https://download.opensuse.org/repositories/shells:/fish/CentOS_8/shells:fish.repo && \
-#        yum install -y fish which
-# EOF
-# docker run --rm \
-#            -v ${TESTS_DIR}:${TESTS_DIR} \
-#            -e ROBOT_HELM_V3=${ROBOT_HELM_V3} \
-#            -e ROBOT_DEBUG_LEVEL=${ROBOT_DEBUG_LEVEL} \
-#            -e TESTS_DIR=${TESTS_DIR} \
-#            ${FISH_IMAGE} ${COMP_SCRIPT} fish
+   FISH_IMAGE=comp-test:fish
 
+   docker build -t ${FISH_IMAGE} ${BASE_DIR} -f - <<- EOF
+      FROM centos
+      RUN cd /etc/yum.repos.d/ && \
+          curl -O https://download.opensuse.org/repositories/shells:/fish/CentOS_8/shells:fish.repo && \
+          yum install -y fish which
+
+      WORKDIR /work
+      COPY . .
+EOF
+   echo "======================================"
+   echo "Testing on Docker"
+   echo "======================================"
+   docker run --rm \
+           ${FISH_IMAGE} tests/test-completion.sh fish
+fi
+exit
 ########################################
 # MacOS completion tests
 ########################################
