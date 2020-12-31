@@ -17,13 +17,14 @@ At this time regression testing is supported for the `bash` and `fish` shell.
 
 I aim to also support `zsh` but I have to figure out how to do so first.
 
-I don't expect to be able to test `powershell` as am not familiar with that shell;
+I don't expect to be able to test `powershell` as I am not familiar with that shell;
 contributions welcomed.
 
 # Dependencies
 
 You will need to clone this project and clone the Cobra project both in the same parent directory.
 You will need an installation of Docker.
+You will need an installation of GO.
 
 Docker is used to execute the tests for different versions of the different
 shells.  The tests can be run on Linux or MacOS.
