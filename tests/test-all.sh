@@ -7,8 +7,6 @@ if [ -z $(which docker) ]; then
   exit 2;
 fi
 
-# Fail as soon as there is an error
-set -e
 BASE_DIR=$(cd $(dirname "${BASH_SOURCE[0]}")/..; pwd)
 
 export TESTS_DIR=${BASE_DIR}/tests
