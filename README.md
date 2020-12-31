@@ -1,4 +1,4 @@
-# A series of completion tests for the Cobra library.
+# Regression tests for Cobra completion scripts
 
 The [Cobra](https://github.com/spf13/cobra) library provides support for shell
 completion for programs that use it.  For this, Cobra provides a `__complete`
