@@ -11,6 +11,9 @@ fi
 set -e
 BASE_DIR=$(cd $(dirname "${BASH_SOURCE[0]}")/..; pwd)
 
+export TESTS_DIR=${BASE_DIR}/tests
+export TESTPROG_DIR=${BASE_DIR}/testprog
+export TESTING_DIR=${BASE_DIR}/testingdir
 SHELL_TYPE=$1
 
 case "$SHELL_TYPE" in
@@ -159,7 +162,7 @@ esac
 # Fish completion tests
 ########################################
 if [ $SHELL_TYPE = fish ] || [ $SHELL_TYPE = all ]; then
-   make build-linux
+   make clean && make build-linux
 
    FISH_IMAGE=comp-test:fish
 
@@ -176,25 +179,21 @@ EOF
    echo "Testing on Docker"
    echo "======================================"
    docker run --rm \
-           ${FISH_IMAGE} tests/test-completion.sh fish
+           ${FISH_IMAGE} tests/fish/comp-tests.fish
 fi
-exit
+
 ########################################
 # MacOS completion tests
 ########################################
 # Since we can't use Docker to test MacOS,
 # we run the MacOS tests locally when possible.
 if [ "$(uname)" == "Darwin" ]; then
-    echo;echo
-    echo "======================================"
-    echo "Attempting completion tests on Darwin"
-    echo "======================================"
+    echo
+    echo "==================================="
+    echo "Attempting completion tests locally"
+    echo "==================================="
 
-    # Copy the local testprogram to use
-    if ! cp ${BINARY_PATH_LOCAL}/${BINARY_NAME} ${TESTS_DIR}/bin ; then
-        echo "Cannot find ${BINARY_NAME} under ${BINARY_PATH_LOCAL}/${BINARY_NAME} although it is what we need to test."
-        exit 1
-    fi
+    make clean && make build
 
     # if which bash>/dev/null && [ -f /usr/local/etc/bash_completion ]; then
     #     echo;echo;
@@ -204,13 +203,17 @@ if [ "$(uname)" == "Darwin" ]; then
     #     echo "Bash or bash_completion package not available locally"
     # fi
  
-    if which fish>/dev/null; then
-        echo;echo;
-        echo "Completion tests for fish running locally"
-        ${COMP_SCRIPT} fish
+    if which fish > /dev/null; then
+        tests/fish/comp-tests.fish
     else
-        echo "Fish shell not available locally"
+        echo
+        echo "Fish shell not available locally, skipping MacOS."
     fi
+else
+    echo
+    echo "================================================"
+    echo "Skipping testing on MacOS; need a MacOS machine."
+    echo "================================================"
 fi
 
 # Indicate if anything failed during the run

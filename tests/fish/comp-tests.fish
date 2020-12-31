@@ -1,21 +1,21 @@
-#!sh
+#!/usr/bin/env fish
 
 echo "===================================================="
 echo Running completions tests on (uname) with fish $version
 echo "===================================================="
 
-cd $TESTING_DIR
-
 # Source the testing logic
-source $TESTS_DIR/fish/comp-test-lib.fish
+source tests/fish/comp-test-lib.fish
 
 # Must set the path again for Fish as the path gets modified when the shell starts
-set PATH $TESTPROG_DIR/bin:$PATH
+set PATH (pwd)/testprog/bin:$PATH
 
 #################################################
 # Setup completion with descriptions
 #################################################
 testprog completion fish | source
+
+cd testingdir
 
 # Basic first level commands (static completion)
 _completionTests_verifyCompletion "testprog comp" "completion"
