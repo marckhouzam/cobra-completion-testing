@@ -22,9 +22,9 @@ contributions welcomed.
 
 # Dependencies
 
-You will need to clone this project and clone the Cobra project both in the same parent directory.
-You will need an installation of Docker.
-You will need an installation of GO.
+- Clone this project and clone the Cobra project both in the same parent directory
+- Docker
+- GO
 
 Docker is used to execute the tests for different versions of the different
 shells.  The tests can be run on Linux or MacOS.

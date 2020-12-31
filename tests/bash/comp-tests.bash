@@ -4,7 +4,8 @@ echo "===================================================="
 echo Running completions tests on $(uname) with bash $BASH_VERSION
 echo "===================================================="
 
-export PATH=$(pwd)/testprog/bin:$PATH
+ROOTDIR=$(pwd)
+export PATH=$ROOTDIR/testprog/bin:$PATH
 
 # Source the testing logic
 source tests/bash/comp-test-lib.bash
@@ -101,6 +102,16 @@ _completionTests_verifyCompletion "testprog --customComp=f" "firstComp forthComp
 # Test when there is a space before the binary name
 # https://github.com/spf13/cobra/issues/1303
 _completionTests_verifyCompletion " testprog prefix default u" "unicorn"
+
+# Test using env variable and ~
+# https://github.com/spf13/cobra/issues/1306
+OLD_HOME=$HOME
+HOME=/tmp
+cp $ROOTDIR/testprog/bin/testprog $HOME/
+# Must use single quotes to keep the environment variable
+_completionTests_verifyCompletion '$HOME/testprog prefix default u' "unicorn"
+_completionTests_verifyCompletion "~/testprog prefix default u" "unicorn"
+HOME=$OLD_HOME
 
 # Test debug printouts
 _completionTests_verifyDebug
