@@ -4,11 +4,10 @@ echo "===================================================="
 echo Running completions tests on (uname) with fish $version
 echo "===================================================="
 
+set PATH (pwd)/testprog/bin:$PATH
+
 # Source the testing logic
 source tests/fish/comp-test-lib.fish
-
-# Must set the path again for Fish as the path gets modified when the shell starts
-set PATH (pwd)/testprog/bin:$PATH
 
 #################################################
 # Setup completion with descriptions

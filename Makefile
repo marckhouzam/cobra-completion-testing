@@ -1,7 +1,7 @@
 TESTPROG_DIR := $(CURDIR)/testprog
 
 .PHONY: all
-all: clean build test
+all: bash fish
 
 .PHONY: build
 build:
@@ -12,11 +12,11 @@ build-linux:
 	@cd $(TESTPROG_DIR) && make build-linux
 
 .PHONY: bash
-bash: clean build
-	@echo "NOT READY"
+bash:
+	@tests/test-all.sh bash
 
 .PHONY: fish
-fish: clean build
+fish:
 	@tests/test-all.sh fish
 
 .PHONY: test

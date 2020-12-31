@@ -1,14 +1,15 @@
-#!sh
+#!/usr/bin/env bash
 
 echo "===================================================="
 echo Running completions tests on $(uname) with bash $BASH_VERSION
 echo "===================================================="
 
-cd $TESTING_DIR
-export PATH=$TESTPROG_DIR/bin:$PATH
+export PATH=$(pwd)/testprog/bin:$PATH
 
 # Source the testing logic
-source $TESTS_DIR/bash/comp-test-lib.bash
+source tests/bash/comp-test-lib.bash
+
+cd testingdir
 
 # Basic first level commands (static completion)
 _completionTests_verifyCompletion "testprog comp" "completion"
