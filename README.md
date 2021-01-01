@@ -23,7 +23,7 @@ contributions welcomed.
 # Dependencies
 
 - Clone this project and clone the Cobra project both in the same parent directory
-- A container engine installation (e.g, Podman or Docker)
+- A container engine installation (e.g., Podman or Docker)
 - GO
 
 Containers are used to execute the tests for different versions of the different
