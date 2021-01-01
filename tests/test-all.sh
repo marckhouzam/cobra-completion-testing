@@ -2,8 +2,11 @@
 
 # This script runs completion tests in different environments and different shells.
 
-if [ -z $(which docker) ]; then
-  echo "Missing 'docker' client which is required for these tests";
+# Get path to docker or podman binary
+CONTAINER_ENGINE=$(command -v docker podman | head -n1)
+
+if [ -z $CONTAINER_ENGINE ]; then
+  echo "Missing 'docker' or 'podman' which is required for these tests";
   exit 2;
 fi
 
@@ -68,7 +71,7 @@ make clean && make build-linux
 if [ $SHELL_TYPE = bash ]; then
    IMAGE=comp-test:bash4
 
-   docker build -t ${IMAGE} ${BASE_DIR} -f - <<- EOF
+   $CONTAINER_ENGINE build -t ${IMAGE} ${BASE_DIR} -f - <<- EOF
       FROM bash:4.4
       RUN apk update && apk add bash-completion ca-certificates
 
@@ -78,7 +81,7 @@ EOF
    echo "======================================"
    echo "Testing on Docker"
    echo "======================================"
-   docker run --rm \
+   $CONTAINER_ENGINE run --rm \
            ${IMAGE} tests/bash/comp-tests.bash
 fi
 
@@ -88,7 +91,7 @@ fi
 if [ $SHELL_TYPE = bash ]; then
    IMAGE=comp-test:bash3
 
-   docker build -t ${IMAGE} ${BASE_DIR} -f - <<- EOF
+   $CONTAINER_ENGINE build -t ${IMAGE} ${BASE_DIR} -f - <<- EOF
       FROM bash:4.4
       RUN apk update && apk add bash-completion ca-certificates
 
@@ -98,7 +101,7 @@ EOF
    echo "======================================"
    echo "Testing on Docker"
    echo "======================================"
-   docker run --rm \
+   $CONTAINER_ENGINE run --rm \
            ${IMAGE} tests/bash/comp-tests.bash
 fi
 
@@ -180,7 +183,7 @@ fi
 if [ $SHELL_TYPE = fish ]; then
    IMAGE=comp-test:fish
 
-   docker build -t ${IMAGE} ${BASE_DIR} -f - <<- EOF
+   $CONTAINER_ENGINE build -t ${IMAGE} ${BASE_DIR} -f - <<- EOF
       FROM centos
       RUN cd /etc/yum.repos.d/ && \
           curl -O https://download.opensuse.org/repositories/shells:/fish/CentOS_8/shells:fish.repo && \
@@ -192,7 +195,7 @@ EOF
    echo "======================================"
    echo "Testing on Docker"
    echo "======================================"
-   docker run --rm \
+   $CONTAINER_ENGINE run --rm \
            ${IMAGE} tests/fish/comp-tests.fish
 fi
 
