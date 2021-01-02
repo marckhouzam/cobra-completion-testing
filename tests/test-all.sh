@@ -29,7 +29,11 @@ esac
 #######################################
 # Testing in a linux container
 #######################################
-make clean && make build-linux
+if [ "$(uname)" == "Linux" ]; then
+   make clean && make build
+else
+   make clean && make build-linux
+fi
 
 ########################################
 # Bash 4 completion tests
