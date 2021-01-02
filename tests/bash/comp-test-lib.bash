@@ -7,6 +7,11 @@ if [ $(uname) = "Darwin" ]; then
 fi
 source ${bashCompletionScript}
 
+# COLOR codes
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+NC='\033[0m'
+
 # Setup completion of testprog
 # Don't use the new source <() form as it does not work with bash v3
 # Normally, compopt is a builtin, and the script checks that it is a
@@ -103,12 +108,12 @@ _completionTests_verifyCompletion() {
       if [ "${#result}" -gt 50 ]; then
          resultOut="${result:0:50} <truncated>"
       fi
-      echo "SUCCESS: \"$cmdLine\" completes to \"$resultOut\""
+      echo -e "${GREEN}SUCCESS: \"$cmdLine\" completes to \"$resultOut\"$NC"
       return 0
    fi
 
    _completionTests_TEST_FAILED=1
-   echo "ERROR: \"$cmdLine\" should complete to \"$expected\" but we got \"$result\""
+   echo -e "${RED}ERROR: \"$cmdLine\" should complete to \"$expected\" but we got \"$result\"$NC"
    return 1
 }
 
@@ -175,10 +180,10 @@ _completionTests_verifyDebug() {
    _completionTests_verifyCompletion "testprog comp" "completion"
    if ! test -s $debugfile; then
       # File should not be empty
-      echo "ERROR: No debug logs were printed to $debugfile"
+      echo -e "${RED}ERROR: No debug logs were printed to $debugfile$NC"
       _completionTests_TEST_FAILED=1
    else
-      echo "SUCCESS: Debug logs were printed to $debugfile"
+      echo -e "${GREEN}SUCCESS: Debug logs were printed to $debugfile$NC"
    fi
    unset BASH_COMP_DEBUG_FILE
 }
@@ -194,11 +199,11 @@ _completionTests_checkDirective() {
    [ -f $_compTests_nospace ] && realnospace=1
 
    if [ $requestnofile -ne $realnofile ]; then
-      echo "ERROR: \"$cmdLine\" expected nofile=$requestnofile but got nofile=$realnofile"
+      echo -e "${RED}ERROR: \"$cmdLine\" expected nofile=$requestnofile but got nofile=$realnofile$NC"
       return 1
    fi
    if [ $requestnospace -ne $realnospace ]; then
-      echo "ERROR: \"$cmdLine\" expected nospace=$requestnospace but got nospace=$realnospace"
+      echo -e "${RED}ERROR: \"$cmdLine\" expected nospace=$requestnospace but got nospace=$realnospace$NC"
       return 1
    fi
 
