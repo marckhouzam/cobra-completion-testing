@@ -10,6 +10,11 @@ export PATH=$TESTPROG_DIR/bin:$PATH
 # Setup completion of testprog
 source <(testprog completion ${SHELL_TYPE})
 
+# COLOR codes
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+NC='\033[0m'
+
 # Global variable to keep track of if a test has failed.
 _completionTests_TEST_FAILED=0
 
@@ -32,11 +37,11 @@ _completionTests_verifyCompletion() {
         if [ "${#result}" -gt 50 ]; then
             resultOut="${result:0:50} <truncated>"
         fi
-        echo "SUCCESS: \"$cmdLine\" completes to \"$resultOut\""
+        echo -e "${GREEN}SUCCESS: \"$cmdLine\" completes to \"$resultOut\"$NC"
     else
         _completionTests_TEST_FAILED=1
         currentFailure=1
-        echo "ERROR: \"$cmdLine\" should complete to \"$expected\" but we got \"$result\""
+        echo -e "${RED}ERROR: \"$cmdLine\" should complete to \"$expected\" but we got \"$result\"$NC"
     fi
 
     return $currentFailure
