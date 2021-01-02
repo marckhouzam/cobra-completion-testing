@@ -15,7 +15,7 @@ all: build
 build: $(BINDIR)/$(BINNAME)
 
 $(BINDIR)/$(BINNAME): $(SRC)
-	go build -o '$(BINDIR)'/$(BINNAME) .
+	CGO_ENABLED=0 go build -o '$(BINDIR)'/$(BINNAME) -ldflags '-extldflags "-static"' .
 
 # If go get is run from inside the project directory it will add the dependencies
 # to the go.mod file. To avoid that we change to a directory without a go.mod file
