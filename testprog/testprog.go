@@ -165,6 +165,21 @@ var errorCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {},
 }
 
+// ======================================================
+// Command that does not accept interspersed flags
+// ======================================================
+var nonInterspersedCmd = &cobra.Command{
+	Use:   "nonInterspersed",
+	Short: "Non interspersed flags",
+	ValidArgsFunction: func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		// Once an argument or -- is received, other arguments can start with a -
+		return []string{"--arg\tan argument"}, cobra.ShellCompDirectiveDefault
+	},
+	Run: func(cmd *cobra.Command, args []string) {
+		fmt.Printf("Got args: %v\n", args)
+	},
+}
+
 func setFlags() {
 	rootCmd.Flags().String("customComp", "", "test custom comp for flags")
 	rootCmd.RegisterFlagCompletionFunc("customComp", func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -174,52 +189,12 @@ func setFlags() {
 	rootCmd.Flags().String("theme", "", "theme to use (located in /dir/THEMENAME/)")
 	rootCmd.Flags().SetAnnotation("theme", cobra.BashCompSubdirsInDir, []string{"dir"})
 
-	// rootCmd.Flags().String("theme2", "", "theme to use (located in /themes/THEMENAME/)")
-	// rootCmd.RegisterFlagCompletionFunc("theme2", func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-	// 	return []string{"themes"}, cobra.ShellCompDirectiveFilterDirs
-	// })
-
-	// rootCmd.Flags().StringP("file", "f", "", "list files")
-	// rootCmd.Flags().String("longdesc", "", "before newline\nafter newline")
-
-	// rootCmd.Flags().BoolP("bool", "b", false, "bool flag")
-	// rootCmd.Flags().BoolSliceP("bslice", "B", nil, "bool slice flag")
-
-	// rootCmd.PersistentFlags().StringP("persistent", "p", "", "persistent flag")
-
-	// // rootCmd.Flags().String("required", "", "required flag")
-	// // rootCmd.MarkFlagRequired("required")
-
-	// vargsCmd.Flags().StringP("nonpersistent", "n", "", "non persistent local flag")
-
-	// // If there is only a recommended value before we reach the equal sign or the colon, then the completion works as expected.
-	// // If the values differ afterwards, completion fails in bash, but works in fish and zsh
-	// rootCmd.Flags().String("equalSignWorks", "", "test custom comp with equal sign")
-	// rootCmd.RegisterFlagCompletionFunc("equalSignWorks", func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-	// 	return []string{"first=Comp\tthe first value", "second=Comp\tthe second value", "forth=Comp\tthe forth value"}, cobra.ShellCompDirectiveNoFileComp
-	// })
-
-	// rootCmd.Flags().String("equalSignWorksNot", "", "test custom comp with equal sign")
-	// rootCmd.RegisterFlagCompletionFunc("equalSignWorksNot", func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-	// 	return []string{"first=Comp1\tthe first value", "first=Comp2\tthe second value", "first=Comp3\tthe forth value"}, cobra.ShellCompDirectiveNoFileComp
-	// })
-
-	// rootCmd.Flags().String("colonWorks", "", "test custom comp with colon one value works")
-	// rootCmd.RegisterFlagCompletionFunc("colonWorks", func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-	// 	return []string{"first:ONE\tthe first value", "second\tthe second value", "forth\tthe forth value"}, cobra.ShellCompDirectiveNoFileComp
-	// })
-
-	// rootCmd.Flags().String("colonWorksNot", "", "test custom comp with colon doesnt work")
-	// rootCmd.RegisterFlagCompletionFunc("colonWorksNot", func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-	// 	return []string{"first:ONE\tthe first value", "first:SECOND\tthe second value", "second:Comp1\tthe forth value"}, cobra.ShellCompDirectiveNoFileComp
-	// })
-
-	// rootCmd.Flags().String("nospace", "", "test custom comp with nospace directive")
-	// rootCmd.RegisterFlagCompletionFunc("nospace", func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-	// 	return []string{"complete\tFirst comp", "compost\tsecondComp"}, cobra.ShellCompDirectiveNoSpace
-	// })
-
-	// rootCmd.Flags().StringArray("array", []string{"allo", "toi"}, "string array flag")
+	nonInterspersedCmd.Flags().SetInterspersed(false)
+	nonInterspersedCmd.Flags().Bool("bool", false, "bool flag")
+	nonInterspersedCmd.Flags().String("string", "", "string flag")
+	nonInterspersedCmd.RegisterFlagCompletionFunc("string", func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return []string{"val\ta value"}, cobra.ShellCompDirectiveDefault
+	})
 
 	// flagA = withflagsCmd.Flags().BoolP("boolA", "a", false, "bool flag 1")
 	// flagB = withflagsCmd.Flags().BoolP("boolB", "b", false, "bool flag 2")
@@ -242,6 +217,7 @@ func main() {
 		dirCmd,
 		subDirCmd,
 		errorCmd,
+		nonInterspersedCmd,
 	)
 
 	prefixCmd.AddCommand(

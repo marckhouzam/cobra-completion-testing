@@ -99,6 +99,9 @@ _completionTests_verifyCompletion "testprog --customComp=f" "firstComp forthComp
 #################################################
 # Special cases
 #################################################
+# Test debug printouts
+_completionTests_verifyDebug
+
 # Test when there is a space before the binary name
 # https://github.com/spf13/cobra/issues/1303
 _completionTests_verifyCompletion " testprog prefix default u" "unicorn"
@@ -113,8 +116,14 @@ _completionTests_verifyCompletion '$HOME/testprog prefix default u' "unicorn"
 _completionTests_verifyCompletion "~/testprog prefix default u" "unicorn"
 HOME=$OLD_HOME
 
-# Test debug printouts
-_completionTests_verifyDebug
+# Test non-interspersed flags
+# https://github.com/spf13/cobra/issues/1307
+_completionTests_verifyCompletion "testprog nonInterspersed --" "--bool --string --string="
+_completionTests_verifyCompletion "testprog nonInterspersed arg --" "--arg"
+_completionTests_verifyCompletion "testprog nonInterspersed -- --" "--arg"
+_completionTests_verifyCompletion "testprog nonInterspersed --string " "val"
+_completionTests_verifyCompletion "testprog nonInterspersed arg --string " "--arg"
+_completionTests_verifyCompletion "testprog nonInterspersed -- --string " "--arg"
 
 # This must be the last call.  It allows to exit with an exit code
 # that reflects the final status of all the tests.

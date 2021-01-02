@@ -110,6 +110,9 @@ _completionTests_verifyCompletion "testprog --customComp=f" "--customComp=firstC
 #################################################
 # Special cases
 #################################################
+# Test debug printouts
+_completionTests_verifyDebug
+
 # Test when there is a space before the binary name
 # https://github.com/spf13/cobra/issues/1303
 _completionTests_verifyCompletion " testprog prefix default u" "unicorn	mythical"
@@ -124,8 +127,14 @@ _completionTests_verifyCompletion '$HOME/testprog prefix default u' "unicorn	myt
 _completionTests_verifyCompletion "~/testprog prefix default u" "unicorn	mythical"
 set HOME $OLD_HOME
 
-# Test debug printouts
-_completionTests_verifyDebug
+# Test non-interspersed flags
+# https://github.com/spf13/cobra/issues/1307
+_completionTests_verifyCompletion "testprog nonInterspersed --" "--bool	bool flag --string	string flag"
+_completionTests_verifyCompletion "testprog nonInterspersed arg --" "--arg	an argument"
+_completionTests_verifyCompletion "testprog nonInterspersed -- --" "--arg	an argument"
+_completionTests_verifyCompletion "testprog nonInterspersed --string " "val	a value"
+_completionTests_verifyCompletion "testprog nonInterspersed arg --string " "--arg	an argument"
+_completionTests_verifyCompletion "testprog nonInterspersed -- --string " "--arg	an argument"
 
 #############################
 # Disable descriptions
