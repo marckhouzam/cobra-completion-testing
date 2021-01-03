@@ -124,6 +124,10 @@ _completionTests_verifyCompletion '$HOME/testprog prefix default u' "unicorn	myt
 _completionTests_verifyCompletion "~/testprog prefix default u" "unicorn	mythical"
 set HOME $OLD_HOME
 
+# An argument starting with dashes
+_completionTests_verifyCompletion "testprog dasharg " "--arg	an arg starting with dashes"
+_completionTests_verifyCompletion "testprog dasharg -- --" "--arg	an arg starting with dashes"
+
 # Test debug printouts
 _completionTests_verifyDebug
 

@@ -113,6 +113,11 @@ _completionTests_verifyCompletion '$HOME/testprog prefix default u' "unicorn"
 _completionTests_verifyCompletion "~/testprog prefix default u" "unicorn"
 HOME=$OLD_HOME
 
+# An argument starting with dashes
+_completionTests_verifyCompletion "testprog dasharg " "--arg"
+# Needs bash completion v2
+#_completionTests_verifyCompletion "testprog dasharg -- --" "--arg"
+
 # Test debug printouts
 _completionTests_verifyDebug
 
