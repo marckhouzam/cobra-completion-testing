@@ -1,5 +1,14 @@
 #!bash
 
+# COLOR codes
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+NC='\033[0m'
+_compTests_nofile=/tmp/comptests.bash.nofile
+_compTests_nospace=/tmp/comptests.bash.nospace
+# Global variable to keep track of if a test has failed.
+_completionTests_TEST_FAILED=0
+
 # Setup bash_completion package
 bashCompletionScript="/usr/share/bash-completion/bash_completion"
 if [ $(uname) = "Darwin" ]; then
@@ -7,13 +16,8 @@ if [ $(uname) = "Darwin" ]; then
 fi
 source ${bashCompletionScript}
 
-# COLOR codes
-RED='\033[0;31m'
-GREEN='\033[0;32m'
-NC='\033[0m'
-
 # Setup completion of testprog
-# Don't use the new source <() form as it does not work with bash v3
+# Don't use the new source <() form as it does not work with bash v3.
 # Normally, compopt is a builtin, and the script checks that it is a
 # builtin do disable it if we are in bash3 (where compopt does not exist).
 # We replace 'builtin' with 'function' because we cannot use the native
@@ -23,23 +27,25 @@ source /dev/stdin <<- EOF
    $(testprog completion bash | sed s/builtin/function/g)
 EOF
 
-_compTests_nofile=/tmp/comptests.bash.nofile
-_compTests_nospace=/tmp/comptests.bash.nospace
-
-# compopt cannot be used outside of real shell
-# completion.  What we do instead is keep track
-# of what options are chosen, to check them.
-compopt() {
-   if [ "$*" = "+o default" ]; then
-      touch $_compTests_nofile
-   elif [ "$*" = "-o default" ]; then
-      rm -f $_compTests_nofile
-   elif [ "$*" = "-o nospace" ]; then
-      touch $_compTests_nospace
-   elif [ "$*" = "+o nospace" ]; then
-      rm -f $_compTests_nospace
-   fi
-}
+# compopt does not exist for bash 3, so we don't
+# define it and if it is called by mistake it will
+# cause an error.
+if [ $BASH_VERSINFO -gt 3 ]; then
+   # compopt cannot be used outside of real shell
+   # completion.  What we do instead is keep track
+   # of what options are chosen, to check them.
+   compopt() {
+      if [ "$*" = "+o default" ]; then
+         touch $_compTests_nofile
+      elif [ "$*" = "-o default" ]; then
+         rm -f $_compTests_nofile
+      elif [ "$*" = "-o nospace" ]; then
+         touch $_compTests_nospace
+      elif [ "$*" = "+o nospace" ]; then
+         rm -f $_compTests_nospace
+      fi
+   }
+fi
 
 _completionTests_reset() {
    rm -f $_compTests_nofile
@@ -50,9 +56,6 @@ _completionTests_reset() {
 # This allows to test completion with aliases.
 # Only needed for bash; zsh does this automatically.
 shopt -s expand_aliases
-
-# Global variable to keep track of if a test has failed.
-_completionTests_TEST_FAILED=0
 
 # Run completion and indicate success or failure.
 #    $1 is the command line that should be completed
@@ -189,6 +192,12 @@ _completionTests_verifyDebug() {
 }
 
 _completionTests_checkDirective() {
+   # compopt does not exist for bash 3 so shell directives
+   # don't work.  Don't fail in this case.
+   if [ $BASH_VERSINFO -eq 3 ]; then
+       return 0
+   fi
+
    local requestnofile=$1
    local requestnospace=$2
    local cmdLine=$3
