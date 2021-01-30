@@ -131,6 +131,12 @@ _completionTests_verifyCompletion "testprog dasharg -- --" "--arg	an arg startin
 # Multiple commands on the same line
 _completionTests_verifyCompletion "echo hello; testprog comp" "completion"
 
+# Unmatched quote
+# https://github.com/spf13/cobra/issues/1214
+# If there is a regression with this tests, we will see some error printouts from fish, even
+# though we may not get an error code. 
+_completionTests_verifyCompletion "testprog '" ""
+
 # Test debug printouts
 _completionTests_verifyDebug
 
