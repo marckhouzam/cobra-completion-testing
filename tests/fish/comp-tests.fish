@@ -128,6 +128,9 @@ set HOME $OLD_HOME
 _completionTests_verifyCompletion "testprog dasharg " "--arg	an arg starting with dashes"
 _completionTests_verifyCompletion "testprog dasharg -- --" "--arg	an arg starting with dashes"
 
+# Multiple commands on the same line
+_completionTests_verifyCompletion "echo hello; testprog comp" "completion"
+
 # Test debug printouts
 _completionTests_verifyDebug
 
