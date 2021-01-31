@@ -52,7 +52,18 @@ func newCompletionCmd(out io.Writer) *cobra.Command {
 		},
 	}
 
-	cmd.AddCommand(bash, zsh, fish)
+	pwsh := &cobra.Command{
+		Use: "powershell",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			if disableCompDescriptions {
+				return cmd.Root().GenPowerShellCompletion(out)
+			} else {
+				return cmd.Root().GenPowerShellCompletionWithDesc(out)
+			}
+		},
+	}
+
+	cmd.AddCommand(bash, zsh, fish, pwsh)
 
 	return cmd
 }

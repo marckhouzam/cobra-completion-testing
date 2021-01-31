@@ -15,7 +15,7 @@ cd testingdir
 # Basic first level commands (static completion)
 _completionTests_verifyCompletion "testprog comp" "completion"
 _completionTests_verifyCompletion "testprog help comp" "completion" nofile
-_completionTests_verifyCompletion "testprog completion " "bash fish zsh"
+_completionTests_verifyCompletion "testprog completion " "bash fish powershell zsh"
 
 #################################################
 # Completions are filtered by prefix by program

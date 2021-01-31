@@ -9,7 +9,8 @@ import (
 )
 
 var (
-	completions = []string{"bear\tan animal", "bearpaw\ta dessert", "dog", "unicorn\tmythical"}
+	completions      = []string{"bear\tan animal", "bearpaw\ta dessert", "dog", "unicorn\tmythical"}
+	specialCharComps = []string{"at@", "equal=", "slash/", "colon:", "period.", "comma,", "letter"}
 )
 
 func getCompsFilteredByPrefix(prefix string) []string {
@@ -51,6 +52,21 @@ var noSpaceCmdPrefix = &cobra.Command{
 	Short: "Directive: no space",
 	ValidArgsFunction: func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return getCompsFilteredByPrefix(toComplete), cobra.ShellCompDirectiveNoSpace
+	},
+	Run: func(cmd *cobra.Command, args []string) {},
+}
+
+var noSpaceCharCmdPrefix = &cobra.Command{
+	Use:   "nospacechar",
+	Short: "Directive: no space, with comp ending with special char @=/:.,",
+	ValidArgsFunction: func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		var finalComps []string
+		for _, comp := range specialCharComps {
+			if strings.HasPrefix(comp, toComplete) {
+				finalComps = append(finalComps, comp)
+			}
+		}
+		return finalComps, cobra.ShellCompDirectiveNoSpace
 	},
 	Run: func(cmd *cobra.Command, args []string) {},
 }
@@ -206,6 +222,7 @@ func main() {
 
 	prefixCmd.AddCommand(
 		noSpaceCmdPrefix,
+		noSpaceCharCmdPrefix,
 		noFileCmdPrefix,
 		noFileNoSpaceCmdPrefix,
 		defaultCmdPrefix,

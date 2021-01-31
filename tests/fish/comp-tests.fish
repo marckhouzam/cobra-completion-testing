@@ -20,7 +20,7 @@ cd testingdir
 # Basic first level commands (static completion)
 _completionTests_verifyCompletion "testprog comp" "completion"
 _completionTests_verifyCompletion "testprog help comp" "completion"
-_completionTests_verifyCompletion "testprog completion " "bash fish zsh"
+_completionTests_verifyCompletion "testprog completion " "bash fish powershell zsh"
 
 #################################################
 # Completions are filtered by prefix by program
@@ -49,6 +49,16 @@ _completionTests_verifyCompletion "testprog prefix nofilenospace b" "bear	an ani
 _completionTests_verifyCompletion "testprog prefix nofilenospace u" "unicorn unicorn."
 _completionTests_verifyCompletion "testprog prefix nofilenospace f" ""
 _completionTests_verifyCompletion "testprog prefix nofilenospace z" ""
+
+# Test ShellCompDirectiveNoSpace => when completion ends with any of @=/:.,
+# in which case fish won't add a space automatically
+_completionTests_verifyCompletion "testprog prefix nospacechar at" "at@"
+_completionTests_verifyCompletion "testprog prefix nospacechar equal" "equal="
+_completionTests_verifyCompletion "testprog prefix nospacechar slash" "slash/"
+_completionTests_verifyCompletion "testprog prefix nospacechar colon" "colon:"
+_completionTests_verifyCompletion "testprog prefix nospacechar period" "period."
+_completionTests_verifyCompletion "testprog prefix nospacechar comma" "comma,"
+_completionTests_verifyCompletion "testprog prefix nospacechar letter" "letter letter."
 
 #################################################
 # Completions are NOT filtered by prefix by the program
