@@ -23,19 +23,25 @@ import (
 
 var disableCompDescriptions bool
 
+func nofilecomp(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	return nil, cobra.ShellCompDirectiveNoFileComp
+}
+
 func newCompletionCmd(out io.Writer) *cobra.Command {
 	cmd := &cobra.Command{Use: "completion"}
 	cmd.PersistentFlags().BoolVar(&disableCompDescriptions, "no-descriptions", false, "disable completion descriptions")
 
 	bash := &cobra.Command{
-		Use: "bash",
+		Use:               "bash",
+		ValidArgsFunction: nofilecomp,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return cmd.Root().GenBashCompletion(out)
 		},
 	}
 
 	zsh := &cobra.Command{
-		Use: "zsh",
+		Use:               "zsh",
+		ValidArgsFunction: nofilecomp,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			if disableCompDescriptions {
 				return cmd.Root().GenZshCompletionNoDesc(out)
@@ -46,14 +52,16 @@ func newCompletionCmd(out io.Writer) *cobra.Command {
 	}
 
 	fish := &cobra.Command{
-		Use: "fish",
+		Use:               "fish",
+		ValidArgsFunction: nofilecomp,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return cmd.Root().GenFishCompletion(out, !disableCompDescriptions)
 		},
 	}
 
 	pwsh := &cobra.Command{
-		Use: "powershell",
+		Use:               "powershell",
+		ValidArgsFunction: nofilecomp,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			if disableCompDescriptions {
 				return cmd.Root().GenPowerShellCompletion(out)

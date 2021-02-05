@@ -76,6 +76,7 @@ EOF
    echo "Testing with $(basename $CONTAINER_ENGINE)"
    echo "======================================"
    $CONTAINER_ENGINE run --rm \
+           -e BASH_COMPLETION=/usr/share/bash-completion \
            ${IMAGE} tests/bash/comp-tests.bash
 fi
 
@@ -93,7 +94,7 @@ if [ $SHELL_TYPE = bash ]; then
       COPY . .
 EOF
    echo "======================================"
-   echo "Testing with $(basename $CONTAINER_ENGINE)"
+   echo "Testing with $(basename $CONTAINER_ENGINE) with CentOS"
    echo "======================================"
    $CONTAINER_ENGINE run --rm \
            ${IMAGE} tests/bash/comp-tests.bash

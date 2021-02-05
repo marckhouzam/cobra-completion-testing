@@ -21,6 +21,7 @@ cd testingdir
 _completionTests_verifyCompletion "testprog comp" "completion"
 _completionTests_verifyCompletion "testprog help comp" "completion"
 _completionTests_verifyCompletion "testprog completion " "bash fish powershell zsh"
+_completionTests_verifyCompletion "testprog completion bash " ""
 
 #################################################
 # Completions are filtered by prefix by program

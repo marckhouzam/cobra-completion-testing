@@ -4,6 +4,22 @@ echo "===================================================="
 echo Running completions tests on $(uname) with bash $BASH_VERSION
 echo "===================================================="
 
+# Test logging using $BASH_COMP_DEBUG_FILE
+verifyDebug() {
+   debugfile=/tmp/comptests.bash.debug
+   rm -f $debugfile
+   export BASH_COMP_DEBUG_FILE=$debugfile
+   _completionTests_verifyCompletion "testprog comp" "completion"
+   if ! test -s $debugfile; then
+      # File should not be empty
+      echo -e "${RED}ERROR: No debug logs were printed to ${debugfile}${NC}"
+      _completionTests_TEST_FAILED=1
+   else
+      echo -e "${GREEN}SUCCESS: Debug logs were printed to ${debugfile}${NC}"
+   fi
+   unset BASH_COMP_DEBUG_FILE
+}
+
 ROOTDIR=$(pwd)
 export PATH=$ROOTDIR/testprog/bin:$PATH
 
@@ -16,6 +32,7 @@ cd testingdir
 _completionTests_verifyCompletion "testprog comp" "completion"
 _completionTests_verifyCompletion "testprog help comp" "completion" nofile
 _completionTests_verifyCompletion "testprog completion " "bash fish powershell zsh"
+_completionTests_verifyCompletion "testprog completion bash " "" nofile
 
 #################################################
 # Completions are filtered by prefix by program
@@ -119,7 +136,7 @@ _completionTests_verifyCompletion "testprog dasharg " "--arg"
 #_completionTests_verifyCompletion "testprog dasharg -- --" "--arg"
 
 # Test debug printouts
-_completionTests_verifyDebug
+verifyDebug
 
 # This must be the last call.  It allows to exit with an exit code
 # that reflects the final status of all the tests.

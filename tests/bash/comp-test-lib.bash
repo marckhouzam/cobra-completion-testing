@@ -88,6 +88,17 @@ _completionTests_verifyCompletion() {
       ;;
    nospace)
       nospace=1
+      case "$4" in
+      "")
+         ;;
+      nofile)
+         nofile=1
+         ;;
+      *)
+         echo "Invalid directive: $4"
+         exit 1
+         ;;
+      esac 
       ;;
    *)
       echo "Invalid directive: $3"
@@ -173,22 +184,6 @@ _completionTests_exit() {
    # Return the global result each time.  This allows for the very last call to
    # this method to return the correct success or failure code for the entire script
    return $_completionTests_TEST_FAILED
-}
-
-# Test logging using $BASH_COMP_DEBUG_FILE
-_completionTests_verifyDebug() {
-   debugfile=/tmp/comptests.bash.debug
-   rm -f $debugfile
-   export BASH_COMP_DEBUG_FILE=$debugfile
-   _completionTests_verifyCompletion "testprog comp" "completion"
-   if ! test -s $debugfile; then
-      # File should not be empty
-      echo -e "${RED}ERROR: No debug logs were printed to $debugfile$NC"
-      _completionTests_TEST_FAILED=1
-   else
-      echo -e "${GREEN}SUCCESS: Debug logs were printed to $debugfile$NC"
-   fi
-   unset BASH_COMP_DEBUG_FILE
 }
 
 _completionTests_checkDirective() {
