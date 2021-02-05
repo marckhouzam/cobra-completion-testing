@@ -20,6 +20,21 @@ verifyDebug() {
    unset BASH_COMP_DEBUG_FILE
 }
 
+# Test completion with a redirection
+# https://github.com/spf13/cobra/issues/1334
+verifyRedirect() {
+   rm -f notexist
+   _completionTests_verifyCompletion "testprog completion bash > notexist" ""
+   if test -f notexist; then
+      # File should not exist
+      echo -e "${RED}ERROR: completion mistakenly created the file 'notexist'${NC}"
+      _completionTests_TEST_FAILED=1
+	  rm -f notexist
+   else
+      echo -e "${GREEN}SUCCESS: No extra file created, as expected${NC}"
+   fi
+}
+
 ROOTDIR=$(pwd)
 export PATH=$ROOTDIR/testprog/bin:$PATH
 
@@ -137,6 +152,10 @@ _completionTests_verifyCompletion "testprog dasharg " "--arg"
 
 # Test debug printouts
 verifyDebug
+
+# Test completion with a redirection
+# https://github.com/spf13/cobra/issues/1334
+verifyRedirect
 
 # This must be the last call.  It allows to exit with an exit code
 # that reflects the final status of all the tests.
