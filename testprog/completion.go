@@ -39,6 +39,14 @@ func newCompletionCmd(out io.Writer) *cobra.Command {
 		},
 	}
 
+	bash2 := &cobra.Command{
+		Use:               "bash2",
+		ValidArgsFunction: nofilecomp,
+		RunE: func(cmd *cobra.Command, args []string) error {
+			return cmd.Root().GenBashCompletionV2(out, !disableCompDescriptions)
+		},
+	}
+
 	zsh := &cobra.Command{
 		Use:               "zsh",
 		ValidArgsFunction: nofilecomp,
@@ -71,7 +79,7 @@ func newCompletionCmd(out io.Writer) *cobra.Command {
 		},
 	}
 
-	cmd.AddCommand(bash, zsh, fish, pwsh)
+	cmd.AddCommand(bash, bash2, zsh, fish, pwsh)
 
 	return cmd
 }
