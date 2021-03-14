@@ -45,7 +45,7 @@ function _completionTests_verifyDebug
    set debugfile /tmp/comptests.fish.debug
    rm -f $debugfile
    set -g BASH_COMP_DEBUG_FILE $debugfile
-   _completionTests_verifyCompletion "testprog prefix default d" "dog"
+   _completionTests_verifyCompletion "testprog comp" "completion"
    if not test -s $debugfile
       # File should not be empty
       echo -e $RED"ERROR: No debug logs were printed to $debugfile$NC"

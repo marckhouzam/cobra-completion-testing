@@ -18,9 +18,10 @@ testprog completion fish | source
 cd testingdir
 
 # Basic first level commands (static completion)
-_completionTests_verifyCompletion "testprog pre" "prefix	completions filtered on prefix"
-_completionTests_verifyCompletion "testprog help pre" "prefix	completions filtered on prefix"
-_completionTests_verifyCompletion "testprog hel" "help	Help about any command"
+_completionTests_verifyCompletion "testprog comp" "completion"
+_completionTests_verifyCompletion "testprog help comp" "completion"
+_completionTests_verifyCompletion "testprog completion " "bash fish powershell zsh"
+_completionTests_verifyCompletion "testprog completion bash " ""
 
 #################################################
 # Completions are filtered by prefix by program
@@ -139,7 +140,7 @@ _completionTests_verifyCompletion "testprog dasharg " "--arg	an arg starting wit
 _completionTests_verifyCompletion "testprog dasharg -- --" "--arg	an arg starting with dashes"
 
 # Multiple commands on the same line
-_completionTests_verifyCompletion "echo hello; testprog pre" "prefix	completions filtered on prefix"
+_completionTests_verifyCompletion "echo hello; testprog comp" "completion"
 
 # Unmatched quote
 # https://github.com/spf13/cobra/issues/1214

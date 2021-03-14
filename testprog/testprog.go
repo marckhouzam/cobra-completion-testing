@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"os"
 	"strings"
 
 	"github.com/spf13/cobra"
@@ -206,6 +207,7 @@ func setFlags() {
 }
 
 func main() {
+	rootCmd.AddCommand(newCompletionCmd(os.Stdout))
 	setFlags()
 
 	rootCmd.AddCommand(

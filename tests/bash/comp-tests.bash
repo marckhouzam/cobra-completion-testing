@@ -44,9 +44,10 @@ source tests/bash/comp-test-lib.bash
 cd testingdir
 
 # Basic first level commands (static completion)
-_completionTests_verifyCompletion "testprog pre" "prefix"
-_completionTests_verifyCompletion "testprog help pre" "prefix" nofile
-_completionTests_verifyCompletion "testprog hel" "help"
+_completionTests_verifyCompletion "testprog comp" "completion"
+_completionTests_verifyCompletion "testprog help comp" "completion" nofile
+_completionTests_verifyCompletion "testprog completion " "bash fish powershell zsh"
+_completionTests_verifyCompletion "testprog completion bash " "" nofile
 
 #################################################
 # Completions are filtered by prefix by program
