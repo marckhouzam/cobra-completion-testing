@@ -36,6 +36,26 @@ else
 fi
 
 ########################################
+# Bash 5 completion tests
+########################################
+if [ $SHELL_TYPE = bash ]; then
+   IMAGE=comp-test:bash5
+
+   $CONTAINER_ENGINE build -t ${IMAGE} ${BASE_DIR} -f - <<- EOF
+      FROM bash:5.1
+      RUN apk update && apk add bash-completion ca-certificates
+
+      WORKDIR /work
+      COPY . .
+EOF
+   echo "======================================"
+   echo "Testing with $(basename $CONTAINER_ENGINE)"
+   echo "======================================"
+   $CONTAINER_ENGINE run --rm \
+           ${IMAGE} tests/bash/comp-tests.bash
+fi
+
+########################################
 # Bash 4 completion tests
 ########################################
 if [ $SHELL_TYPE = bash ]; then
