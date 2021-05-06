@@ -19,12 +19,12 @@ source ${bashCompletionScript}
 # Setup completion of testprog
 # Don't use the new source <() form as it does not work with bash v3.
 # Normally, compopt is a builtin, and the script checks that it is a
-# builtin do disable it if we are in bash3 (where compopt does not exist).
+# builtin to disable it if we are in bash3 (where compopt does not exist).
 # We replace 'builtin' with 'function' because we cannot use the native
 # compopt since we are explicitely calling the completion code instead
 # of from within a real completion environment.
 source /dev/stdin <<- EOF
-   $(testprog completion bash | sed s/builtin/function/g)
+   $(testprog completion $NO_DESC $BASHCOMP_VERSION | sed s/builtin/function/g)
 EOF
 
 # compopt does not exist for bash 3, so we don't

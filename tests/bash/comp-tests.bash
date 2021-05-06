@@ -9,7 +9,7 @@ verifyDebug() {
    debugfile=/tmp/comptests.bash.debug
    rm -f $debugfile
    export BASH_COMP_DEBUG_FILE=$debugfile
-   _completionTests_verifyCompletion "testprog comp" "completion"
+   _completionTests_verifyCompletion "testprog help comp" "completion" nofile
    if ! test -s $debugfile; then
       # File should not be empty
       echo -e "${RED}ERROR: No debug logs were printed to ${debugfile}${NC}"
@@ -38,15 +38,33 @@ verifyRedirect() {
 ROOTDIR=$(pwd)
 export PATH=$ROOTDIR/testprog/bin:$PATH
 
+# Are we testing Cobra's bash completion v1 or v2?
+BASHCOMP_VERSION=bash
+NO_DESC=""
+if [ -n "$BASHCOMPV2" ]; then
+    BASHCOMP_VERSION=bash2
+    # When running docker without the --tty/-t flag, the COLUMNS variable is not set
+    # bash completion v2 needs it to handle descriptions, so we set it here if it is unset
+    COLUMNS=${COLUMNS-100}
+
+    # FIXME Turn off descriptions for now
+    NO_DESC="--no-descriptions"
+fi
+
 # Source the testing logic
 source tests/bash/comp-test-lib.bash
 
 cd testingdir
 
 # Basic first level commands (static completion)
-_completionTests_verifyCompletion "testprog comp" "completion"
+if [ "$BASHCOMP_VERSION" = bash2 ]; then
+    _completionTests_verifyCompletion "testprog comp" "completion" nofile
+    _completionTests_verifyCompletion "testprog completion " "bash bash2 fish powershell zsh" nofile
+else
+    _completionTests_verifyCompletion "testprog comp" "completion"
+    _completionTests_verifyCompletion "testprog completion " "bash bash2 fish powershell zsh"
+fi
 _completionTests_verifyCompletion "testprog help comp" "completion" nofile
-_completionTests_verifyCompletion "testprog completion " "bash fish powershell zsh"
 _completionTests_verifyCompletion "testprog completion bash " "" nofile
 
 #################################################
@@ -122,7 +140,11 @@ _completionTests_verifyCompletion "testprog error u" ""
 #################################################
 # Flags
 #################################################
-_completionTests_verifyCompletion "testprog --custom" "--customComp --customComp=" nospace
+if [ "$BASHCOMP_VERSION" = bash2 ]; then
+    _completionTests_verifyCompletion "testprog --custom" "--customComp" nofile
+else
+    _completionTests_verifyCompletion "testprog --custom" "--customComp --customComp=" nospace
+fi
 _completionTests_verifyCompletion "testprog --customComp " "firstComp secondComp forthComp" nofile
 _completionTests_verifyCompletion "testprog --customComp f" "firstComp forthComp" nofile
 _completionTests_verifyCompletion "testprog --customComp=" "firstComp secondComp forthComp" nofile
