@@ -16,17 +16,6 @@ if [ $(uname) = "Darwin" ]; then
 fi
 source ${bashCompletionScript}
 
-# Setup completion of testprog
-# Don't use the new source <() form as it does not work with bash v3.
-# Normally, compopt is a builtin, and the script checks that it is a
-# builtin to disable it if we are in bash3 (where compopt does not exist).
-# We replace 'builtin' with 'function' because we cannot use the native
-# compopt since we are explicitely calling the completion code instead
-# of from within a real completion environment.
-source /dev/stdin <<- EOF
-   $(testprog completion $NO_DESC $BASHCOMP_VERSION | sed s/builtin/function/g)
-EOF
-
 # compopt does not exist for bash 3, so we don't
 # define it and if it is called by mistake it will
 # cause an error.
@@ -134,7 +123,13 @@ _completionTests_verifyCompletion() {
 _completionTests_sort() {
    # We use printf instead of echo as the $1 could be -n which would be
    # interpreted as an argument to echo
-   printf "%s\n" "$1" | sed -e 's/^ *//' -e 's/ *$//' | tr ' ' '\n' | sort -n | tr '\n' ' ' | sed -e 's/^ *//' -e 's/ *$//'
+   if [ -n "$BASH_COMP_NO_SORT" ]; then
+      # Don't sort, just print back what we received
+      printf "%s\n" "$1"
+   else
+      # sort the output
+      printf "%s\n" "$1" | sed -e 's/^ *//' -e 's/ *$//' | tr ' ' '\n' | sort -n | tr '\n' ' ' | sed -e 's/^ *//' -e 's/ *$//'
+   fi
 }
 
 # Find the completion function associated with the binary.
