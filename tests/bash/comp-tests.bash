@@ -40,19 +40,23 @@ export PATH=$ROOTDIR/testprog/bin:$PATH
 
 # Are we testing Cobra's bash completion v1 or v2?
 BASHCOMP_VERSION=bash
-NO_DESC=""
 if [ -n "$BASHCOMPV2" ]; then
     BASHCOMP_VERSION=bash2
-    # When running docker without the --tty/-t flag, the COLUMNS variable is not set
-    # bash completion v2 needs it to handle descriptions, so we set it here if it is unset
-    COLUMNS=${COLUMNS-100}
-
-    # FIXME Turn off descriptions for now
-    NO_DESC="--no-descriptions"
 fi
 
 # Source the testing logic
 source tests/bash/comp-test-lib.bash
+
+# Setup completion of testprog, disabling descriptions (which is important for v2)
+# Don't use the new source <() form as it does not work with bash v3.
+# Normally, compopt is a builtin, and the script checks that it is a
+# builtin to disable it if we are in bash3 (where compopt does not exist).
+# We replace 'builtin' with 'function' because we cannot use the native
+# compopt since we are explicitely calling the completion code instead
+# of from within a real completion environment.
+source /dev/stdin <<- EOF
+   $(testprog completion --no-descriptions $BASHCOMP_VERSION | sed s/builtin/function/g)
+EOF
 
 cd testingdir
 
@@ -178,6 +182,64 @@ verifyDebug
 # Test completion with a redirection
 # https://github.com/spf13/cobra/issues/1334
 verifyRedirect
+
+# Test descriptions of bash v2
+if [ "$BASHCOMP_VERSION" = bash2 ]; then
+
+  # Setup completion of testprog, enabling descriptions for v2.
+  # Don't use the new source <() form as it does not work with bash v3.
+  # Normally, compopt is a builtin, and the script checks that it is a
+  # builtin to disable it if we are in bash3 (where compopt does not exist).
+  # We replace 'builtin' with 'function' because we cannot use the native
+  # compopt since we are explicitely calling the completion code instead
+  # of from within a real completion environment.
+  source /dev/stdin <<- EOF
+     $(testprog completion --no-descriptions=false $BASHCOMP_VERSION | sed s/builtin/function/g)
+EOF
+
+   # Disable sorting of output because it would mix up the descriptions
+   BASH_COMP_NO_SORT=1
+
+   # When running docker without the --tty/-t flag, the COLUMNS variable is not set
+   # bash completion v2 needs it to handle descriptions, so we set it here if it is unset
+   COLUMNS=${COLUMNS-100}
+
+   # Test descriptions with ShellCompDirectiveDefault
+   _completionTests_verifyCompletion "testprog prefix default " "bear     (an animal)
+bearpaw  (a dessert)
+dog
+unicorn  (mythical)"
+   _completionTests_verifyCompletion "testprog prefix default b" "bear     (an animal)
+bearpaw  (a dessert)"
+   _completionTests_verifyCompletion "testprog prefix default bearp" "bearpaw"
+
+   # Test descriptions with ShellCompDirectiveNoFileComp
+   _completionTests_verifyCompletion "testprog prefix nofile " "bear     (an animal)
+bearpaw  (a dessert)
+dog
+unicorn  (mythical)" nofile
+   _completionTests_verifyCompletion "testprog prefix nofile b" "bear     (an animal)
+bearpaw  (a dessert)" nofile
+   _completionTests_verifyCompletion "testprog prefix nofile bearp" "bearpaw" nofile
+
+   # Test descriptions with ShellCompDirectiveNoSpace
+   _completionTests_verifyCompletion "testprog prefix nospace " "bear     (an animal)
+bearpaw  (a dessert)
+dog
+unicorn  (mythical)" nospace
+   _completionTests_verifyCompletion "testprog prefix nospace b" "bear     (an animal)
+bearpaw  (a dessert)" nospace
+   _completionTests_verifyCompletion "testprog prefix nospace bearp" "bearpaw" nospace
+
+   # Test descriptions with completion of flag values
+   _completionTests_verifyCompletion "testprog --customComp " "firstComp   (the first value)
+secondComp  (the second value)
+forthComp" nofile
+   _completionTests_verifyCompletion "testprog --customComp f" "firstComp  (the first value)
+forthComp" nofile
+   _completionTests_verifyCompletion "testprog --customComp fi" "firstComp" nofile
+
+fi
 
 # This must be the last call.  It allows to exit with an exit code
 # that reflects the final status of all the tests.
