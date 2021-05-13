@@ -189,7 +189,7 @@ if [ "$(uname)" == "Darwin" ]; then
     make clean && make build
 
     if [ $SHELL_TYPE = bash ]; then
-       if which bash > /dev/null && [ -f /usr/local/etc/bash_completion ]; then
+       if which bash > /dev/null && [ -f /usr/local/etc/profile.d/bash_completion.sh ]; then
           tests/bash/comp-tests.bash
 
           # Test bashCompletionV2
@@ -198,6 +198,7 @@ if [ "$(uname)" == "Darwin" ]; then
        else
           echo
           echo "Bash or bash_completion package not available locally, skipping MacOS"
+          echo "Please note that you must install bash_completion v2 (brew install bash-completion@2)"
        fi
     fi
 

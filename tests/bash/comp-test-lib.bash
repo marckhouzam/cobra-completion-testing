@@ -12,7 +12,10 @@ _completionTests_TEST_FAILED=0
 # Setup bash_completion package
 bashCompletionScript="/usr/share/bash-completion/bash_completion"
 if [ $(uname) = "Darwin" ]; then
-   bashCompletionScript="/usr/local/etc/bash_completion"
+   bashCompletionScript="/usr/local/etc/profile.d/bash_completion.sh"
+   # Trick bash-completion into thinking this is an interactive shell
+   # See the if statement at the beginning of /usr/local/etc/profile.d/bash_completion.sh
+   PS1="%"
 fi
 source ${bashCompletionScript}
 
