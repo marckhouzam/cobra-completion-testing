@@ -35,6 +35,12 @@ else
    make clean && make build-linux
 fi
 
+# Now run all tests, even if there is a failure.
+# But remember if there was any failure to report it at the end.
+set +e
+GOT_FAILURE=0
+trap "GOT_FAILURE=1" ERR
+
 ########################################
 # Bash 5 completion tests
 ########################################
