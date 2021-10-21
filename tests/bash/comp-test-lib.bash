@@ -158,7 +158,7 @@ _completionTests_complete() {
    # used for both bash and zsh completion
    COMP_LINE=${cmdLine}
    COMP_POINT=${#COMP_LINE}
-   COMP_TYPE=9 # 9 is TAB
+   COMP_TYPE=${COMP_TYPE-9} # 9 is TAB, but we allow to override for some tests
    COMP_KEY=9  # 9 is TAB
    COMP_WORDS=($(echo ${cmdLine}))
 

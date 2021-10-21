@@ -187,6 +187,18 @@ if [ $BASH_VERSINFO != 3 ]; then
    verifyRedirect
 fi
 
+# Test other bash completion types with descriptions disabled.
+# There should be no change in behaviour when there are no descriptions.
+# The types are: menu-complete/menu-complete-backward (COMP_TYPE == 37)
+# and insert-completions (COMP_TYPE == 42)
+COMP_TYPE=37
+_completionTests_verifyCompletion "testprog prefix nospace b" "bear bearpaw" nospace
+_completionTests_verifyCompletion "testprog prefix nofile b" "bear bearpaw" nofile
+COMP_TYPE=42
+_completionTests_verifyCompletion "testprog prefix nospace b" "bear bearpaw" nospace
+_completionTests_verifyCompletion "testprog prefix nofile b" "bear bearpaw" nofile
+unset COMP_TYPE
+
 # Test descriptions of bash v2
 if [ "$BASHCOMP_VERSION" = bash2 ]; then
 
@@ -243,6 +255,20 @@ forthComp" nofile
 forthComp" nofile
    _completionTests_verifyCompletion "testprog --customComp fi" "firstComp" nofile
 
+   # Test descriptions are properly removed when using other bash completion types
+   # The types are: menu-complete/menu-complete-backward (COMP_TYPE == 37)
+   # and insert-completions (COMP_TYPE == 42)
+   COMP_TYPE=37
+   _completionTests_verifyCompletion "testprog prefix nospace b" "bear
+bearpaw" nospace
+   _completionTests_verifyCompletion "testprog prefix nofile b" "bear
+bearpaw" nofile
+   COMP_TYPE=42
+   _completionTests_verifyCompletion "testprog prefix nospace b" "bear
+bearpaw" nospace
+   _completionTests_verifyCompletion "testprog prefix nofile b" "bear
+bearpaw" nofile
+   unset COMP_TYPE
 fi
 
 # This must be the last call.  It allows to exit with an exit code
