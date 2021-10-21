@@ -181,7 +181,11 @@ verifyDebug
 
 # Test completion with a redirection
 # https://github.com/spf13/cobra/issues/1334
-verifyRedirect
+if [ $BASH_VERSINFO != 3 ]; then
+   # We know and accept that this fails with bash 3
+   # https://github.com/spf13/cobra/issues/1334
+   verifyRedirect
+fi
 
 # Test descriptions of bash v2
 if [ "$BASHCOMP_VERSION" = bash2 ]; then
