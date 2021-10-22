@@ -1,7 +1,8 @@
 TESTPROG_DIR := $(CURDIR)/testprog
 
 .PHONY: all
-all: bash fish
+all:
+	@tests/test-all.sh bash fish
 
 .PHONY: build
 build:

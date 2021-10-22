@@ -15,13 +15,20 @@ BASE_DIR=$(cd $(dirname "${BASH_SOURCE[0]}")/..; pwd)
 export TESTS_DIR=${BASE_DIR}/tests
 export TESTPROG_DIR=${BASE_DIR}/testprog
 export TESTING_DIR=${BASE_DIR}/testingdir
-SHELL_TYPE=$1
+
+# Run all tests, even if there is a failure.
+# But remember if there was any failure to report it at the end.
+set +e
+GOT_FAILURE=0
+trap "GOT_FAILURE=1" ERR
+
+for SHELL_TYPE in "$@"; do
 
 case "$SHELL_TYPE" in
-bash|fish|zsh)
+bash|fish)
     ;;
 *)
-    echo "Invalid shell to test: $SHELL_TYPE.  Can be: bash|fish|zsh"
+    echo "Invalid shell to test: $SHELL_TYPE.  Can be: bash|fish"
     exit 1
     ;;
 esac
@@ -34,12 +41,6 @@ if [ "$(uname)" == "Linux" ]; then
 else
    make clean && make build-linux
 fi
-
-# Now run all tests, even if there is a failure.
-# But remember if there was any failure to report it at the end.
-set +e
-GOT_FAILURE=0
-trap "GOT_FAILURE=1" ERR
 
 ########################################
 # Bash 5 completion tests
@@ -223,5 +224,6 @@ else
     echo "================================================"
 fi
 
+done
 # Indicate if anything failed during the run
 exit ${GOT_FAILURE}
