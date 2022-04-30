@@ -133,20 +133,20 @@ EOF
 fi
 
 ########################################
-# Bash centos completion tests
+# Bash redhat completion tests
 ########################################
 if [ $SHELL_TYPE = bash ]; then
-   IMAGE=comp-test:bashcentos
+   IMAGE=comp-test:bashredhat
 
    $CONTAINER_ENGINE build -t ${IMAGE} ${BASE_DIR} -f - <<- EOF
-      FROM centos
+      FROM redhat/ubi8
       RUN yum install -y bash-completion which
 
       WORKDIR /work
       COPY . .
 EOF
    echo "======================================"
-   echo "Testing with $(basename $CONTAINER_ENGINE) with CentOS"
+   echo "Testing with $(basename $CONTAINER_ENGINE) with RedHat"
    echo "======================================"
    $CONTAINER_ENGINE run --rm \
            ${IMAGE} tests/bash/comp-tests.bash
@@ -167,7 +167,7 @@ if [ $SHELL_TYPE = fish ]; then
    IMAGE=comp-test:fish
 
    $CONTAINER_ENGINE build -t ${IMAGE} ${BASE_DIR} -f - <<- EOF
-      FROM centos
+      FROM redhat/ubi8
       RUN cd /etc/yum.repos.d/ && \
           curl -O https://download.opensuse.org/repositories/shells:/fish/CentOS_8/shells:fish.repo && \
           yum install -y fish which
