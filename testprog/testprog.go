@@ -194,6 +194,23 @@ var dashArgCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {},
 }
 
+// ======================================================
+// Command generates many completions.
+// It can be used to test performance.
+// ======================================================
+var manyCompsCmd = &cobra.Command{
+	Use:   "manycomps",
+	Short: "Outputs a thousand completions",
+	ValidArgsFunction: func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		var comps []string
+		for i := 0; i < 1000; i++ {
+			comps = append(comps, fmt.Sprintf("%[1]d-comp\tThis is comp %[1]d", i))
+		}
+		return comps, cobra.ShellCompDirectiveDefault
+	},
+	Run: func(cmd *cobra.Command, args []string) {},
+}
+
 func setFlags() {
 	rootCmd.Flags().String("customComp", "", "test custom comp for flags")
 	rootCmd.RegisterFlagCompletionFunc("customComp", func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -218,6 +235,7 @@ func main() {
 		subDirCmd,
 		errorCmd,
 		dashArgCmd,
+		manyCompsCmd,
 	)
 
 	prefixCmd.AddCommand(
