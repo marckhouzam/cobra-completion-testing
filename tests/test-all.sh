@@ -69,7 +69,7 @@ EOF
            -e BASHCOMPV2=1 \
            ${IMAGE} tests/bash/comp-tests.bash
 fi
-exit
+
 ########################################
 # Bash 4 completion tests
 ########################################
