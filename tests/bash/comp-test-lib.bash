@@ -137,15 +137,16 @@ _completionTests_sort() {
 
 # $1 - The completion to measure
 # $2 - The maximum time to consider it an error
+# $3 - An output prefix
 _completionTests_timing() {
    TIMEFORMAT=%R
    timing=$({ time { _completionTests_complete "$1" > /dev/null; } } 2>&1)
    if (( $(echo "$timing > ${2}" | bc -l) )); then
       _completionTests_TEST_FAILED=1
-      echo -e "${RED}Processing 1000 completions took ${timing} seconds which is more than the ${2-0.1} seconds limit$NC" 
+      echo -e "${RED}<= TIMING => ${3}: 1000 completions took ${timing} seconds > ${2-0.1} seconds limit$NC" 
       return 1
    else
-      echo -e "${GREEN}Processing 1000 completions took ${timing} seconds which is less than the ${2-0.1} seconds limit$NC" 
+      echo -e "${GREEN}<= TIMING => ${3}: 1000 completions took ${timing} seconds < ${2-0.1} seconds limit$NC" 
       return 0
    fi
 }

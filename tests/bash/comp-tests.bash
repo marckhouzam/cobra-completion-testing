@@ -187,6 +187,9 @@ if [ $BASH_VERSINFO != 3 ]; then
    verifyRedirect
 fi
 
+# Measure speed of execution without descriptions (for both v1 and v2)
+_completionTests_timing "testprog manycomps " 0.2 "no descriptions"
+
 # Test other bash completion types with descriptions disabled.
 # There should be no change in behaviour when there are no descriptions.
 # The types are: menu-complete/menu-complete-backward (COMP_TYPE == 37)
@@ -194,13 +197,18 @@ fi
 COMP_TYPE=37
 _completionTests_verifyCompletion "testprog prefix nospace b" "bear bearpaw" nospace
 _completionTests_verifyCompletion "testprog prefix nofile b" "bear bearpaw" nofile
+
+# Measure speed of execution with menu-complete without descriptions (for both v1 and v2)
+_completionTests_timing "testprog manycomps " 0.2 "menu-complete no descs"
+
 COMP_TYPE=42
 _completionTests_verifyCompletion "testprog prefix nospace b" "bear bearpaw" nospace
 _completionTests_verifyCompletion "testprog prefix nofile b" "bear bearpaw" nofile
-unset COMP_TYPE
 
-# Measure speed of execution without descriptions (for both v1 and v2)
-_completionTests_timing "testprog manycomps " 0.2
+# Measure speed of execution with insert-completions without descriptions (for both v1 and v2)
+_completionTests_timing "testprog manycomps " 0.2 "insert-completions no descs"
+
+unset COMP_TYPE
 
 # Test descriptions of bash v2
 if [ "$BASHCOMP_VERSION" = bash2 ]; then
@@ -258,6 +266,9 @@ forthComp" nofile
 forthComp" nofile
    _completionTests_verifyCompletion "testprog --customComp fi" "firstComp" nofile
 
+   # Measure speed of execution with descriptions
+   _completionTests_timing "testprog manycomps " 0.5 "with descriptions"
+
    # Test descriptions are properly removed when using other bash completion types
    # The types are: menu-complete/menu-complete-backward (COMP_TYPE == 37)
    # and insert-completions (COMP_TYPE == 42)
@@ -266,15 +277,20 @@ forthComp" nofile
 bearpaw" nospace
    _completionTests_verifyCompletion "testprog prefix nofile b" "bear
 bearpaw" nofile
+
+   # Measure speed of execution with menu-complete with descriptions
+   _completionTests_timing "testprog manycomps " 0.2 "menu-complete with descs"
+
    COMP_TYPE=42
    _completionTests_verifyCompletion "testprog prefix nospace b" "bear
 bearpaw" nospace
    _completionTests_verifyCompletion "testprog prefix nofile b" "bear
 bearpaw" nofile
-   unset COMP_TYPE
 
-   # Measure speed of execution with descriptions
-   _completionTests_timing "testprog manycomps " 0.5
+   # Measure speed of execution with insert-completions with descriptions
+   _completionTests_timing "testprog manycomps " 0.2 "insert-completions no descs"
+
+   unset COMP_TYPE
 fi
 
 # This must be the last call.  It allows to exit with an exit code
