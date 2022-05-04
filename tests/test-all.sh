@@ -69,7 +69,7 @@ EOF
            -e BASHCOMPV2=1 \
            ${IMAGE} tests/bash/comp-tests.bash
 fi
-
+exit
 ########################################
 # Bash 4 completion tests
 ########################################
@@ -140,7 +140,7 @@ if [ $SHELL_TYPE = bash ]; then
 
    $CONTAINER_ENGINE build -t ${IMAGE} ${BASE_DIR} -f - <<- EOF
       FROM redhat/ubi8
-      RUN yum install -y bash-completion which
+      RUN yum install -y bash-completion which bc
 
       WORKDIR /work
       COPY . .
@@ -190,7 +190,7 @@ fi
 if [ "$(uname)" == "Darwin" ]; then
     echo
     echo "==================================="
-    echo "Attempting completion tests locally"
+    echo "Attempting $SHELL_TYPE completion tests locally"
     echo "==================================="
 
     make clean && make build

@@ -199,6 +199,9 @@ _completionTests_verifyCompletion "testprog prefix nospace b" "bear bearpaw" nos
 _completionTests_verifyCompletion "testprog prefix nofile b" "bear bearpaw" nofile
 unset COMP_TYPE
 
+# Measure speed of execution without descriptions (for both v1 and v2)
+_completionTests_timing "testprog manycomps " 0.2
+
 # Test descriptions of bash v2
 if [ "$BASHCOMP_VERSION" = bash2 ]; then
 
@@ -269,6 +272,9 @@ bearpaw" nospace
    _completionTests_verifyCompletion "testprog prefix nofile b" "bear
 bearpaw" nofile
    unset COMP_TYPE
+
+   # Measure speed of execution with descriptions
+   _completionTests_timing "testprog manycomps " 0.5
 fi
 
 # This must be the last call.  It allows to exit with an exit code
