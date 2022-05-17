@@ -188,10 +188,16 @@ _completionTests_complete() {
    # to stderr.
    eval $(_completionTests_findCompletionFunction ${COMP_WORDS[0]}) 2>&1
 
-   # Return the result of the completion.
+   # Return the result of the call to the completion function.
+   # We separate each completion with a space and not a newline; using newlines
+   # was preventing us from detecting empty completions as newlines are stripped
+   # automatically by the sub-shell call to this function.
+   result="$(printf "%s " "${COMPREPLY[@]}")"
+   # remove the last space we inserted ourselves
+   result="${result% }"
    # We use printf instead of echo as the first completion could be -n which
    # would be interpreted as an argument to echo
-   printf "%s\n" "${COMPREPLY[@]}"
+   printf "%s" "${result}"
 }
 
 _completionTests_exit() {

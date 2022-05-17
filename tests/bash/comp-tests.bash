@@ -232,38 +232,23 @@ EOF
    COLUMNS=${COLUMNS-100}
 
    # Test descriptions with ShellCompDirectiveDefault
-   _completionTests_verifyCompletion "testprog prefix default " "bear     (an animal)
-bearpaw  (a dessert)
-dog
-unicorn  (mythical)"
-   _completionTests_verifyCompletion "testprog prefix default b" "bear     (an animal)
-bearpaw  (a dessert)"
+   _completionTests_verifyCompletion "testprog prefix default " "bear     (an animal) bearpaw  (a dessert) dog unicorn  (mythical)"
+   _completionTests_verifyCompletion "testprog prefix default b" "bear     (an animal) bearpaw  (a dessert)"
    _completionTests_verifyCompletion "testprog prefix default bearp" "bearpaw"
 
    # Test descriptions with ShellCompDirectiveNoFileComp
-   _completionTests_verifyCompletion "testprog prefix nofile " "bear     (an animal)
-bearpaw  (a dessert)
-dog
-unicorn  (mythical)" nofile
-   _completionTests_verifyCompletion "testprog prefix nofile b" "bear     (an animal)
-bearpaw  (a dessert)" nofile
+   _completionTests_verifyCompletion "testprog prefix nofile " "bear     (an animal) bearpaw  (a dessert) dog unicorn  (mythical)" nofile
+   _completionTests_verifyCompletion "testprog prefix nofile b" "bear     (an animal) bearpaw  (a dessert)" nofile
    _completionTests_verifyCompletion "testprog prefix nofile bearp" "bearpaw" nofile
 
    # Test descriptions with ShellCompDirectiveNoSpace
-   _completionTests_verifyCompletion "testprog prefix nospace " "bear     (an animal)
-bearpaw  (a dessert)
-dog
-unicorn  (mythical)" nospace
-   _completionTests_verifyCompletion "testprog prefix nospace b" "bear     (an animal)
-bearpaw  (a dessert)" nospace
+   _completionTests_verifyCompletion "testprog prefix nospace " "bear     (an animal) bearpaw  (a dessert) dog unicorn  (mythical)" nospace
+   _completionTests_verifyCompletion "testprog prefix nospace b" "bear     (an animal) bearpaw  (a dessert)" nospace
    _completionTests_verifyCompletion "testprog prefix nospace bearp" "bearpaw" nospace
 
    # Test descriptions with completion of flag values
-   _completionTests_verifyCompletion "testprog --customComp " "firstComp   (the first value)
-secondComp  (the second value)
-forthComp" nofile
-   _completionTests_verifyCompletion "testprog --customComp f" "firstComp  (the first value)
-forthComp" nofile
+   _completionTests_verifyCompletion "testprog --customComp " "firstComp   (the first value) secondComp  (the second value) forthComp" nofile
+   _completionTests_verifyCompletion "testprog --customComp f" "firstComp  (the first value) forthComp" nofile
    _completionTests_verifyCompletion "testprog --customComp fi" "firstComp" nofile
 
    # Measure speed of execution with descriptions
@@ -273,19 +258,15 @@ forthComp" nofile
    # The types are: menu-complete/menu-complete-backward (COMP_TYPE == 37)
    # and insert-completions (COMP_TYPE == 42)
    COMP_TYPE=37
-   _completionTests_verifyCompletion "testprog prefix nospace b" "bear
-bearpaw" nospace
-   _completionTests_verifyCompletion "testprog prefix nofile b" "bear
-bearpaw" nofile
+   _completionTests_verifyCompletion "testprog prefix nospace b" "bear bearpaw" nospace
+   _completionTests_verifyCompletion "testprog prefix nofile b" "bear bearpaw" nofile
 
    # Measure speed of execution with menu-complete with descriptions
    _completionTests_timing "testprog manycomps " 0.2 "menu-complete with descs"
 
    COMP_TYPE=42
-   _completionTests_verifyCompletion "testprog prefix nospace b" "bear
-bearpaw" nospace
-   _completionTests_verifyCompletion "testprog prefix nofile b" "bear
-bearpaw" nofile
+   _completionTests_verifyCompletion "testprog prefix nospace b" "bear bearpaw" nospace
+   _completionTests_verifyCompletion "testprog prefix nofile b" "bear bearpaw" nofile
 
    # Measure speed of execution with insert-completions with descriptions
    _completionTests_timing "testprog manycomps " 0.2 "insert-completions no descs"
