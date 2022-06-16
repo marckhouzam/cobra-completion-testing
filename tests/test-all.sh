@@ -196,7 +196,7 @@ if [ "$(uname)" == "Darwin" ]; then
     make clean && make build
 
     if [ $SHELL_TYPE = bash ]; then
-       if which bash > /dev/null && [ -f /usr/local/etc/profile.d/bash_completion.sh ]; then
+       if which bash > /dev/null && [ -f $(brew --prefix)/etc/profile.d/bash_completion.sh ]; then
           tests/bash/comp-tests.bash
 
           # Test bashCompletionV2
