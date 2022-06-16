@@ -31,8 +31,7 @@ PHONY: mac
 mac:
 	@cd $(TESTPROG_DIR) && make clean
 	@cd $(TESTPROG_DIR) && make
-	@tests/test-completion.sh bash
-	@tests/test-completion.sh fish
+	@tests/test-all.sh macos
 
 .PHONY: clean
 clean:
