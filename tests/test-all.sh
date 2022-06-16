@@ -22,13 +22,13 @@ set +e
 GOT_FAILURE=0
 trap "GOT_FAILURE=1" ERR
 
-for SHELL_TYPE in "$@"; do
+for TARGET in "$@"; do
 
-case "$SHELL_TYPE" in
-bash|fish)
+case "$TARGET" in
+bash|fish|macos)
     ;;
 *)
-    echo "Invalid shell to test: $SHELL_TYPE.  Can be: bash|fish"
+    echo "Invalid target to test: $TARGET.  Can be: bash|fish|macos"
     exit 1
     ;;
 esac
@@ -45,7 +45,7 @@ fi
 ########################################
 # Bash 5 completion tests
 ########################################
-if [ $SHELL_TYPE = bash ]; then
+if [ $TARGET = bash ]; then
    IMAGE=comp-test:bash5
 
    $CONTAINER_ENGINE build -t ${IMAGE} ${BASE_DIR} -f - <<- EOF
@@ -73,7 +73,7 @@ fi
 ########################################
 # Bash 4 completion tests
 ########################################
-if [ $SHELL_TYPE = bash ]; then
+if [ $TARGET = bash ]; then
    IMAGE=comp-test:bash4
 
    $CONTAINER_ENGINE build -t ${IMAGE} ${BASE_DIR} -f - <<- EOF
@@ -101,7 +101,7 @@ fi
 ########################################
 # Bash 3.2 completion tests
 ########################################
-if [ $SHELL_TYPE = bash ]; then
+if [ $TARGET = bash ]; then
    IMAGE=comp-test:bash3
 
    $CONTAINER_ENGINE build -t ${IMAGE} ${BASE_DIR} -f - <<- EOF
@@ -135,7 +135,7 @@ fi
 ########################################
 # Bash redhat completion tests
 ########################################
-if [ $SHELL_TYPE = bash ]; then
+if [ $TARGET = bash ]; then
    IMAGE=comp-test:bashredhat
 
    $CONTAINER_ENGINE build -t ${IMAGE} ${BASE_DIR} -f - <<- EOF
@@ -163,7 +163,7 @@ fi
 ########################################
 # Fish completion tests
 ########################################
-if [ $SHELL_TYPE = fish ]; then
+if [ $TARGET = fish ]; then
    IMAGE=comp-test:fish
 
    $CONTAINER_ENGINE build -t ${IMAGE} ${BASE_DIR} -f - <<- EOF
@@ -190,12 +190,12 @@ fi
 if [ "$(uname)" == "Darwin" ]; then
     echo
     echo "==================================="
-    echo "Attempting $SHELL_TYPE completion tests locally"
+    echo "Attempting MacOS completion tests locally"
     echo "==================================="
 
     make clean && make build
 
-    if [ $SHELL_TYPE = bash ]; then
+    if [ $TARGET = bash ] || [ $TARGET = macos ]; then
        if which bash > /dev/null && [ -f $(brew --prefix)/etc/profile.d/bash_completion.sh ]; then
           tests/bash/comp-tests.bash
 
@@ -209,7 +209,7 @@ if [ "$(uname)" == "Darwin" ]; then
        fi
     fi
 
-    if [ $SHELL_TYPE = fish ]; then
+    if [ $TARGET = fish ] || [ $TARGET = macos ]; then
        if which fish > /dev/null; then
           tests/fish/comp-tests.fish
        else
