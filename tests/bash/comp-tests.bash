@@ -164,11 +164,13 @@ _completionTests_verifyCompletion " testprog prefix default u" "unicorn"
 # Test using env variable and ~
 # https://github.com/spf13/cobra/issues/1306
 OLD_HOME=$HOME
-HOME=/tmp
+HOME=$(mktemp -d)
 cp $ROOTDIR/testprog/bin/testprog $HOME/
 # Must use single quotes to keep the environment variable
 _completionTests_verifyCompletion '$HOME/testprog prefix default u' "unicorn"
 _completionTests_verifyCompletion "~/testprog prefix default u" "unicorn"
+rm $HOME/testprog
+rmdir $HOME
 HOME=$OLD_HOME
 
 # An argument starting with dashes
