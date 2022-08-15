@@ -170,8 +170,7 @@ _completionTests_findCompletionFunction() {
 _completionTests_complete() {
    local cmdLine=$1
 
-   # Set the bash completion variables which are
-   # used for both bash and zsh completion
+   # Set the bash completion variables
    COMP_LINE=${cmdLine}
    COMP_POINT=${#COMP_LINE}
    COMP_TYPE=${COMP_TYPE-9} # 9 is TAB, but we allow to override for some tests
