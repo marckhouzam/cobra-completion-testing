@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"os"
 	"strings"
 
@@ -211,6 +212,26 @@ var manyCompsCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {},
 }
 
+// ======================================================
+// Command that provide completions containing a space
+// ======================================================
+var compWithSpaceCmd = &cobra.Command{
+	Use:   "space",
+	Short: "Completions that contain a space",
+	ValidArgsFunction: func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		var comps []string
+		if len(args) == 0 {
+			comps = []string{"with space", "desc for with space\tDescription for comp with space"}
+		}
+		return comps, cobra.ShellCompDirectiveNoFileComp
+	},
+	Run: func(cmd *cobra.Command, args []string) {
+		if len(args) > 0 && args[0] != "with space" && args[0] != "with space and desc" {
+			log.Fatal("Got wrong arg")
+		}
+	},
+}
+
 func setFlags() {
 	rootCmd.Flags().String("customComp", "", "test custom comp for flags")
 	rootCmd.RegisterFlagCompletionFunc("customComp", func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -236,6 +257,7 @@ func main() {
 		errorCmd,
 		dashArgCmd,
 		manyCompsCmd,
+		compWithSpaceCmd,
 	)
 
 	prefixCmd.AddCommand(
