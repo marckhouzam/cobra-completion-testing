@@ -212,6 +212,17 @@ _completionTests_timing "testprog manycomps " 0.2 "insert-completions no descs"
 
 unset COMP_TYPE
 
+# Test that completions can contain a space.
+# We only support this for bash completion v2
+# https://github.com/spf13/cobra/issues/1740
+# https://github.com/spf13/cobra/pull/1743
+if [ "$BASHCOMP_VERSION" = bash2 ]; then
+  # Disable sorting as it would mistakenly split the completion on the space
+  BASH_COMP_NO_SORT=1
+  _completionTests_verifyCompletion "testprog space w" "with\ space" nofile
+  unset BASH_COMP_NO_SORT
+fi
+
 # Test descriptions of bash v2
 if [ "$BASHCOMP_VERSION" = bash2 ]; then
 
