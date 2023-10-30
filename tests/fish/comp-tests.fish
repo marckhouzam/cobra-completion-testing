@@ -113,9 +113,9 @@ _completionTests_verifyCompletion "testprog error z" ""
 # Flags
 #################################################
 _completionTests_verifyCompletion "testprog --custom" "--customComp	test custom comp for flags"
-_completionTests_verifyCompletion "testprog --customComp " "firstComp	the first value secondComp	the second value forthComp"
+_completionTests_verifyCompletion "testprog --customComp " "firstComp	the first value forthComp secondComp	the second value"
 _completionTests_verifyCompletion "testprog --customComp f" "firstComp	the first value forthComp"
-_completionTests_verifyCompletion "testprog --customComp=" "--customComp=firstComp	the first value --customComp=secondComp	the second value --customComp=forthComp"
+_completionTests_verifyCompletion "testprog --customComp=" "--customComp=firstComp	the first value --customComp=forthComp --customComp=secondComp	the second value"
 _completionTests_verifyCompletion "testprog --customComp=f" "--customComp=firstComp	the first value --customComp=forthComp"
 
 #################################################
@@ -162,9 +162,9 @@ _completionTests_verifyCompletion "testprog prefix default " "bear bearpaw dog u
 _completionTests_verifyCompletion " testprog prefix default u" "unicorn"
 _completionTests_verifyCompletion "testprog noprefix nofile paw" "bearpaw"
 _completionTests_verifyCompletion "testprog --custom" "--customComp"
-_completionTests_verifyCompletion "testprog --customComp " "firstComp secondComp forthComp"
+_completionTests_verifyCompletion "testprog --customComp " "firstComp forthComp secondComp"
 _completionTests_verifyCompletion "testprog --customComp f" "firstComp forthComp"
-_completionTests_verifyCompletion "testprog --customComp=" "--customComp=firstComp --customComp=secondComp --customComp=forthComp"
+_completionTests_verifyCompletion "testprog --customComp=" "--customComp=firstComp --customComp=forthComp --customComp=secondComp"
 _completionTests_verifyCompletion "testprog --customComp=f" "--customComp=firstComp --customComp=forthComp"
 _completionTests_verifyDebug
 
