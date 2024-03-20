@@ -12,10 +12,10 @@ verifyDebug() {
    _completionTests_verifyCompletion "testprog help comp" "completion" nofile
    if ! test -s $debugfile; then
       # File should not be empty
-      echo -e "${RED}ERROR: No debug logs were printed to ${debugfile}${NC}"
+      echo "${RED}ERROR: No debug logs were printed to ${debugfile}${NC}"
       _completionTests_TEST_FAILED=1
    else
-      echo -e "${GREEN}SUCCESS: Debug logs were printed to ${debugfile}${NC}"
+      echo "${GREEN}SUCCESS: Debug logs were printed to ${debugfile}${NC}"
    fi
    unset BASH_COMP_DEBUG_FILE
 }
@@ -27,11 +27,11 @@ verifyRedirect() {
    _completionTests_verifyCompletion "testprog completion bash > notexist" ""
    if test -f notexist; then
       # File should not exist
-      echo -e "${RED}ERROR: completion mistakenly created the file 'notexist'${NC}"
+      echo "${RED}ERROR: completion mistakenly created the file 'notexist'${NC}"
       _completionTests_TEST_FAILED=1
 	  rm -f notexist
    else
-      echo -e "${GREEN}SUCCESS: No extra file created, as expected${NC}"
+      echo "${GREEN}SUCCESS: No extra file created, as expected${NC}"
    fi
 }
 
@@ -153,6 +153,26 @@ _completionTests_verifyCompletion "testprog --customComp " "firstComp secondComp
 _completionTests_verifyCompletion "testprog --customComp f" "firstComp forthComp" nofile
 _completionTests_verifyCompletion "testprog --customComp=" "firstComp secondComp forthComp" nofile
 _completionTests_verifyCompletion "testprog --customComp=f" "firstComp forthComp" nofile
+
+#################################################
+# Special characters
+#################################################
+if [ "$BASHCOMP_VERSION" = bash2 ]; then
+   (
+   BASH_COMP_NO_SORT=1
+   _completionTests_verifyCompletion "testprog prefix special-chars bash" "bash space bash\\escape bash\\ escaped\\ space bash>redirect bash#comment bash\$var bash|pipe bash;semicolon"
+   _completionTests_verifyCompletion "testprog prefix special-chars bash\\e" "bash\\escape"
+   # TODO: completionTests_verifyCompletion doesn't support testing something
+   # like this.
+   #_completionTests_verifyCompletion "testprog prefix special-chars bash\\ e" "bash\\ escaped\\ space"
+   _completionTests_verifyCompletion "testprog prefix special-chars bash>r" "bash>redirect"
+   _completionTests_verifyCompletion "testprog prefix special-chars bash#c" "bash#comment"
+   _completionTests_verifyCompletion "testprog prefix special-chars bash\$v" 'bash$var'
+   _completionTests_verifyCompletion "testprog prefix special-chars bash|p" "bash|pipe"
+   _completionTests_verifyCompletion "testprog prefix special-chars bash;s" "bash;semicolon"
+   )
+fi
+
 
 #################################################
 # Special cases
