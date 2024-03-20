@@ -1,9 +1,9 @@
 #!bash
 
 # COLOR codes
-RED='\033[0;31m'
-GREEN='\033[0;32m'
-NC='\033[0m'
+RED="$(echo -e '\033[0;31m')"
+GREEN="$(echo -e '\033[0;32m')"
+NC="$(echo -e '\033[0m')"
 _compTests_nofile=/tmp/comptests.bash.nofile
 _compTests_nospace=/tmp/comptests.bash.nospace
 # Global variable to keep track of if a test has failed.
@@ -55,8 +55,8 @@ shopt -s expand_aliases
 _completionTests_verifyCompletion() {
    _completionTests_reset
 
-   local cmdLine=$1
-   local expected=$2
+   local cmdLine="$1"
+   local expected="$2"
    local currentFailure=0
 
    local nofile=0
@@ -114,12 +114,12 @@ _completionTests_verifyCompletion() {
       if [ "${#result}" -gt 50 ]; then
          resultOut="${result:0:50} <truncated>"
       fi
-      echo -e "${GREEN}SUCCESS: \"$cmdLine\" completes to \"$resultOut\"$NC"
+      echo "${GREEN}SUCCESS: \"$cmdLine\" completes to \"$resultOut\"$NC"
       return 0
    fi
 
    _completionTests_TEST_FAILED=1
-   echo -e "${RED}ERROR: \"$cmdLine\" should complete to \"$expected\" but we got \"$result\"$NC"
+   echo "${RED}ERROR: \"$cmdLine\" should complete to \"$expected\" but we got \"$result\"$NC"
    return 1
 }
 
@@ -143,10 +143,10 @@ _completionTests_timing() {
    timing=$({ time { _completionTests_complete "$1" > /dev/null; } } 2>&1)
    if (( $(echo "$timing > ${2}" | bc -l) )); then
       _completionTests_TEST_FAILED=1
-      echo -e "${RED}<= TIMING => ${3}: 1000 completions took ${timing} seconds > ${2-0.1} seconds limit$NC" 
+      echo "${RED}<= TIMING => ${3}: 1000 completions took ${timing} seconds > ${2-0.1} seconds limit$NC" 
       return 1
    else
-      echo -e "${GREEN}<= TIMING => ${3}: 1000 completions took ${timing} seconds < ${2-0.1} seconds limit$NC" 
+      echo "${GREEN}<= TIMING => ${3}: 1000 completions took ${timing} seconds < ${2-0.1} seconds limit$NC" 
       return 0
    fi
 }
@@ -180,7 +180,7 @@ _completionTests_complete() {
    COMP_CWORD=$((${#COMP_WORDS[@]}-1))
    # We must check for a space as the last character which will tell us
    # that the previous word is complete and the cursor is on the next word.
-   [ "${cmdLine: -1}" = " " ] && COMP_CWORD=${#COMP_WORDS[@]}
+   [ "${cmdLine: -1}" = " " ] && COMP_CWORD=${#COMP_WORDS[@]} && COMP_WORDS[COMP_CWORD]=''
 
    # Call the completion function associated with the binary being called.
    # Also redirect stderr to stdout so that the tests fail if anything is printed
@@ -222,11 +222,11 @@ _completionTests_checkDirective() {
    [ -f $_compTests_nospace ] && realnospace=1
 
    if [ $requestnofile -ne $realnofile ]; then
-      echo -e "${RED}ERROR: \"$cmdLine\" expected nofile=$requestnofile but got nofile=$realnofile$NC"
+      echo "${RED}ERROR: \"$cmdLine\" expected nofile=$requestnofile but got nofile=$realnofile$NC"
       return 1
    fi
    if [ $requestnospace -ne $realnospace ]; then
-      echo -e "${RED}ERROR: \"$cmdLine\" expected nospace=$requestnospace but got nospace=$realnospace$NC"
+      echo "${RED}ERROR: \"$cmdLine\" expected nospace=$requestnospace but got nospace=$realnospace$NC"
       return 1
    fi
 

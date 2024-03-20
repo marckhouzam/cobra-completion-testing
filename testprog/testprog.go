@@ -9,8 +9,10 @@ import (
 )
 
 var (
-	completions      = []string{"bear\tan animal", "bearpaw\ta dessert", "dog", "unicorn\tmythical"}
-	specialCharComps = []string{"at@", "equal=", "slash/", "colon:", "period.", "comma,", "letter"}
+	completions                      = []string{"bear\tan animal", "bearpaw\ta dessert", "dog", "unicorn\tmythical"}
+	completionsWithSpecialCharacters = []string{`bash1 space`, `bash2\escape`, `bash3\ escaped\ space`, `bash4>redirect`, `bash5#comment`, `bash6$var`, `bash7|pipe`, `bash8;semicolon`, `bash9=equals`, `bashA:colon`}
+	specialCharComps                 = []string{"at@", "equal=", "slash/", "colon:", "period.", "comma,", "letter"}
+	specialFlag                      string
 )
 
 func getCompsFilteredByPrefix(prefix string) []string {
@@ -45,6 +47,30 @@ var defaultCmdPrefix = &cobra.Command{
 		return getCompsFilteredByPrefix(toComplete), cobra.ShellCompDirectiveDefault
 	},
 	Run: func(cmd *cobra.Command, args []string) {},
+}
+
+var specialCharsCmdPrefix = &cobra.Command{
+	Use:   "special-chars",
+	Short: "Directive: special chars",
+	ValidArgsFunction: func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		var finalComps []string
+		for _, comp := range completionsWithSpecialCharacters {
+			if strings.HasPrefix(comp, toComplete) {
+				finalComps = append(finalComps, comp)
+			}
+		}
+		return finalComps, cobra.ShellCompDirectiveDefault
+	},
+	Run: func(cmd *cobra.Command, args []string) {
+		if specialFlag != "" {
+			fmt.Println("special flag:", specialFlag)
+		}
+
+		fmt.Println("args:")
+		for _, arg := range args {
+			fmt.Println(arg)
+		}
+	},
 }
 
 var noSpaceCmdPrefix = &cobra.Command{
@@ -221,6 +247,12 @@ func setFlags() {
 	rootCmd.Flags().SetAnnotation("theme", cobra.BashCompSubdirsInDir, []string{"dir"})
 
 	dashArgCmd.Flags().Bool("flag", false, "a flag")
+
+	specialCharsCmdPrefix.Flags().StringVar(&specialFlag, "special", "", "special char")
+	specialCharsCmdPrefix.RegisterFlagCompletionFunc("special", func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return completionsWithSpecialCharacters, cobra.ShellCompDirectiveNoFileComp
+	})
+
 }
 
 func main() {
@@ -244,6 +276,7 @@ func main() {
 		noFileCmdPrefix,
 		noFileNoSpaceCmdPrefix,
 		defaultCmdPrefix,
+		specialCharsCmdPrefix,
 	)
 
 	noPrefixCmd.AddCommand(

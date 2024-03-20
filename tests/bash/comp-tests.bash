@@ -12,10 +12,10 @@ verifyDebug() {
    _completionTests_verifyCompletion "testprog help comp" "completion" nofile
    if ! test -s $debugfile; then
       # File should not be empty
-      echo -e "${RED}ERROR: No debug logs were printed to ${debugfile}${NC}"
+      echo "${RED}ERROR: No debug logs were printed to ${debugfile}${NC}"
       _completionTests_TEST_FAILED=1
    else
-      echo -e "${GREEN}SUCCESS: Debug logs were printed to ${debugfile}${NC}"
+      echo "${GREEN}SUCCESS: Debug logs were printed to ${debugfile}${NC}"
    fi
    unset BASH_COMP_DEBUG_FILE
 }
@@ -27,11 +27,11 @@ verifyRedirect() {
    _completionTests_verifyCompletion "testprog completion bash > notexist" ""
    if test -f notexist; then
       # File should not exist
-      echo -e "${RED}ERROR: completion mistakenly created the file 'notexist'${NC}"
+      echo "${RED}ERROR: completion mistakenly created the file 'notexist'${NC}"
       _completionTests_TEST_FAILED=1
 	  rm -f notexist
    else
-      echo -e "${GREEN}SUCCESS: No extra file created, as expected${NC}"
+      echo "${GREEN}SUCCESS: No extra file created, as expected${NC}"
    fi
 }
 
@@ -59,6 +59,7 @@ source /dev/stdin <<- EOF
 EOF
 
 cd testingdir
+COMP_TYPE=63
 
 # Basic first level commands (static completion)
 if [ "$BASHCOMP_VERSION" = bash2 ]; then
@@ -155,6 +156,41 @@ _completionTests_verifyCompletion "testprog --customComp=" "firstComp secondComp
 _completionTests_verifyCompletion "testprog --customComp=f" "firstComp forthComp" nofile
 
 #################################################
+# Special characters
+#################################################
+if [ "$BASHCOMP_VERSION" = bash2 ]; then
+    BASH_COMP_NO_SORT=1
+    _completionTests_verifyCompletion "testprog prefix special-chars bash" "bash1 space bash2\\escape bash3\\ escaped\\ space bash4>redirect bash5#comment bash6\$var bash7|pipe bash8;semicolon bash9=equals bashA:colon"
+
+    COMP_TYPE=9
+    _completionTests_verifyCompletion "testprog prefix special-chars bash1" "bash1\ space"
+    _completionTests_verifyCompletion "testprog prefix special-chars bash2\\e" ""
+    _completionTests_verifyCompletion "testprog prefix special-chars bash2\\\\e" "bash2\\\\escape"
+    # TODO: completionTests_verifyCompletion doesn't support testing something
+    # like this.
+    #_completionTests_verifyCompletion "testprog prefix special-chars bash3\\ e" "bash\\ escaped\\ space"
+    _completionTests_verifyCompletion "testprog prefix special-chars bash4" "bash4\\>redirect"
+    _completionTests_verifyCompletion "testprog prefix special-chars bash4>" ""
+    _completionTests_verifyCompletion "testprog prefix special-chars bash4\\>" "bash4\\>redirect"
+    _completionTests_verifyCompletion "testprog prefix special-chars bash5#c" "bash5\\#comment"
+    _completionTests_verifyCompletion "testprog prefix special-chars bash5\\#c" "bash5\\#comment"
+    _completionTests_verifyCompletion "testprog prefix special-chars bash6\$v" "bash6\\\$var"
+    _completionTests_verifyCompletion "testprog prefix special-chars bash6\\\$v" "bash6\\\$var"
+    _completionTests_verifyCompletion "testprog prefix special-chars bash7|p" ""
+    _completionTests_verifyCompletion "testprog prefix special-chars bash7\\|p" "bash7\\|pipe"
+    # In practice, _init_completion would short circuit cobra completion so
+    # custom completion would never see an invocation like this.
+    #_completionTests_verifyCompletion "testprog prefix special-chars bash8;s" ""
+    _completionTests_verifyCompletion "testprog prefix special-chars bash8\\;s" "bash8\\;semicolon"
+    _completionTests_verifyCompletion "testprog prefix special-chars bash9=e" "equals"
+    _completionTests_verifyCompletion "testprog prefix special-chars bashA:c" "colon"
+    COMP_TYPE=63
+
+    unset BASH_COMP_NO_SORT
+fi
+
+
+#################################################
 # Special cases
 #################################################
 # Test when there is a space before the binary name
@@ -210,7 +246,7 @@ _completionTests_verifyCompletion "testprog prefix nofile b" "bear bearpaw" nofi
 # Measure speed of execution with insert-completions without descriptions (for both v1 and v2)
 _completionTests_timing "testprog manycomps " 0.2 "insert-completions no descs"
 
-unset COMP_TYPE
+COMP_TYPE=63
 
 # Test descriptions of bash v2
 if [ "$BASHCOMP_VERSION" = bash2 ]; then
@@ -273,7 +309,7 @@ EOF
    # Measure speed of execution with insert-completions with descriptions
    _completionTests_timing "testprog manycomps " 0.2 "insert-completions no descs"
 
-   unset COMP_TYPE
+   COMP_TYPE=63
 fi
 
 # This must be the last call.  It allows to exit with an exit code
