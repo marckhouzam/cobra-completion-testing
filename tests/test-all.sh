@@ -50,7 +50,7 @@ if [ $TARGET = bash ]; then
 
    $CONTAINER_ENGINE build -t ${IMAGE} ${BASE_DIR} -f - <<- EOF
       FROM bash:5.1
-      RUN apk update && apk add bash-completion ca-certificates
+      RUN apk update && apk add bash-completion ca-certificates libc6-compat
 
       WORKDIR /work
       COPY . .
@@ -78,7 +78,7 @@ if [ $TARGET = bash ]; then
 
    $CONTAINER_ENGINE build -t ${IMAGE} ${BASE_DIR} -f - <<- EOF
       FROM bash:4.4
-      RUN apk update && apk add bash-completion ca-certificates
+      RUN apk update && apk add bash-completion ca-certificates libc6-compat
 
       WORKDIR /work
       COPY . .
@@ -106,7 +106,7 @@ if [ $TARGET = bash ]; then
 
    $CONTAINER_ENGINE build -t ${IMAGE} ${BASE_DIR} -f - <<- EOF
       FROM bash:3.2
-      RUN apk update && apk add ca-certificates
+      RUN apk update && apk add ca-certificates libc6-compat
       # For bash 3.2, the bash-completion package required is version 1.3
       RUN mkdir /usr/share/bash-completion && \
           wget -qO - https://github.com/scop/bash-completion/archive/1.3.tar.gz | \
@@ -139,7 +139,7 @@ if [ $TARGET = bash ]; then
    IMAGE=comp-test:bashredhat
 
    $CONTAINER_ENGINE build -t ${IMAGE} ${BASE_DIR} -f - <<- EOF
-      FROM redhat/ubi8
+      FROM redhat/ubi9
       RUN yum install -y bash-completion which bc
 
       WORKDIR /work
