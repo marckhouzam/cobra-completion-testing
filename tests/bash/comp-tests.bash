@@ -158,19 +158,19 @@ _completionTests_verifyCompletion "testprog --customComp=f" "firstComp forthComp
 # Special characters
 #################################################
 if [ "$BASHCOMP_VERSION" = bash2 ]; then
-   (
-   BASH_COMP_NO_SORT=1
-   _completionTests_verifyCompletion "testprog prefix special-chars bash" "bash space bash\\escape bash\\ escaped\\ space bash>redirect bash#comment bash\$var bash|pipe bash;semicolon"
-   _completionTests_verifyCompletion "testprog prefix special-chars bash\\e" "bash\\escape"
-   # TODO: completionTests_verifyCompletion doesn't support testing something
-   # like this.
-   #_completionTests_verifyCompletion "testprog prefix special-chars bash\\ e" "bash\\ escaped\\ space"
-   _completionTests_verifyCompletion "testprog prefix special-chars bash>r" "bash>redirect"
-   _completionTests_verifyCompletion "testprog prefix special-chars bash#c" "bash#comment"
-   _completionTests_verifyCompletion "testprog prefix special-chars bash\$v" 'bash$var'
-   _completionTests_verifyCompletion "testprog prefix special-chars bash|p" "bash|pipe"
-   _completionTests_verifyCompletion "testprog prefix special-chars bash;s" "bash;semicolon"
-   )
+    orig_bash_comp_no_sort="${BASH_COMP_NO_SORT}"
+    BASH_COMP_NO_SORT=1
+    _completionTests_verifyCompletion "testprog prefix special-chars bash" "bash space bash\\escape bash\\ escaped\\ space bash>redirect bash#comment bash\$var bash|pipe bash;semicolon"
+    _completionTests_verifyCompletion "testprog prefix special-chars bash\\e" "bash\\escape"
+    # TODO: completionTests_verifyCompletion doesn't support testing something
+    # like this.
+    #_completionTests_verifyCompletion "testprog prefix special-chars bash\\ e" "bash\\ escaped\\ space"
+    _completionTests_verifyCompletion "testprog prefix special-chars bash>r" "bash>redirect"
+    _completionTests_verifyCompletion "testprog prefix special-chars bash#c" "bash#comment"
+    _completionTests_verifyCompletion "testprog prefix special-chars bash\$v" 'bash$var'
+    _completionTests_verifyCompletion "testprog prefix special-chars bash|p" "bash|pipe"
+    _completionTests_verifyCompletion "testprog prefix special-chars bash;s" "bash;semicolon"
+    BASH_COMP_NO_SORT="${orig_bash_comp_no_sort}"
 fi
 
 
