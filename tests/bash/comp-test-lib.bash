@@ -180,7 +180,7 @@ _completionTests_complete() {
    COMP_CWORD=$((${#COMP_WORDS[@]}-1))
    # We must check for a space as the last character which will tell us
    # that the previous word is complete and the cursor is on the next word.
-   [ "${cmdLine: -1}" = " " ] && COMP_CWORD=${#COMP_WORDS[@]}
+   [ "${cmdLine: -1}" = " " ] && COMP_CWORD=${#COMP_WORDS[@]} && COMP_WORDS[COMP_CWORD]=''
 
    # Call the completion function associated with the binary being called.
    # Also redirect stderr to stdout so that the tests fail if anything is printed
