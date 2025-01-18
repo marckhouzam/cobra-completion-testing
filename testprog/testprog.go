@@ -10,9 +10,20 @@ import (
 
 var (
 	completions                      = []string{"bear\tan animal", "bearpaw\ta dessert", "dog", "unicorn\tmythical"}
-	completionsWithSpecialCharacters = []string{`bash1 space`, `bash2\escape`, `bash3\ escaped\ space`, `bash4>redirect`, `bash5#comment`, `bash6$var`, `bash7|pipe`, `bash8;semicolon`, `bash9=equals`, `bashA:colon`}
-	specialCharComps                 = []string{"at@", "equal=", "slash/", "colon:", "period.", "comma,", "letter"}
-	specialFlag                      string
+	completionsWithSpecialCharacters = []string{
+		"bash1 space\twith space",
+		`bash2\escape` + "\twith escape",
+		`bash3\ escaped\ space` + "\twith escape and space",
+		"bash4>redirect\twith redirect",
+		"bash5#comment\twith comment",
+		"bash6$var\twith var",
+		"bash7|pipe\twith pipe",
+		"bash8;semicolon\twith semicolon",
+		"bash9=equals\twith equal",
+		"bashA:colon\twith colon",
+	}
+	specialCharComps = []string{"at@", "equal=", "slash/", "colon:", "period.", "comma,", "letter"}
+	specialFlag      string
 )
 
 func getCompsFilteredByPrefix(prefix string) []string {
@@ -53,13 +64,17 @@ var specialCharsCmdPrefix = &cobra.Command{
 	Use:   "special-chars",
 	Short: "Directive: special chars",
 	ValidArgsFunction: func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		if len(args) > 0 {
+			return nil, cobra.ShellCompDirectiveNoFileComp
+		}
+
 		var finalComps []string
 		for _, comp := range completionsWithSpecialCharacters {
 			if strings.HasPrefix(comp, toComplete) {
 				finalComps = append(finalComps, comp)
 			}
 		}
-		return finalComps, cobra.ShellCompDirectiveDefault
+		return finalComps, cobra.ShellCompDirectiveNoFileComp
 	},
 	Run: func(cmd *cobra.Command, args []string) {
 		if specialFlag != "" {
