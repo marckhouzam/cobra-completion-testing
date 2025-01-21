@@ -12,10 +12,10 @@ verifyDebug() {
    _completionTests_verifyCompletion "testprog help comp" "completion" nofile
    if ! test -s $debugfile; then
       # File should not be empty
-      echo -e "${RED}ERROR: No debug logs were printed to ${debugfile}${NC}"
+      echo "${RED}ERROR: No debug logs were printed to ${debugfile}${NC}"
       _completionTests_TEST_FAILED=1
    else
-      echo -e "${GREEN}SUCCESS: Debug logs were printed to ${debugfile}${NC}"
+      echo "${GREEN}SUCCESS: Debug logs were printed to ${debugfile}${NC}"
    fi
    unset BASH_COMP_DEBUG_FILE
 }
@@ -27,11 +27,11 @@ verifyRedirect() {
    _completionTests_verifyCompletion "testprog completion bash > notexist" ""
    if test -f notexist; then
       # File should not exist
-      echo -e "${RED}ERROR: completion mistakenly created the file 'notexist'${NC}"
+      echo "${RED}ERROR: completion mistakenly created the file 'notexist'${NC}"
       _completionTests_TEST_FAILED=1
 	  rm -f notexist
    else
-      echo -e "${GREEN}SUCCESS: No extra file created, as expected${NC}"
+      echo "${GREEN}SUCCESS: No extra file created, as expected${NC}"
    fi
 }
 
@@ -155,6 +155,55 @@ _completionTests_verifyCompletion "testprog --customComp=" "firstComp secondComp
 _completionTests_verifyCompletion "testprog --customComp=f" "firstComp forthComp" nofile
 
 #################################################
+# Special characters
+#################################################
+if [ "$BASHCOMP_VERSION" = bash2 ]; then
+    # When there are may completions that match, these completions will be shown in a list
+    # and we do not escape them.  We only escape them when there is a single completion as it
+    # will be inserted directly into the command line.
+    _completionTests_verifyCompletion 'testprog prefix special-chars bash' 'bash1 space bash2\escape bash3\ escaped\ space bash4>redirect bash5#comment bash6$var bash7|pipe bash8;semicolon bash9=equals bashA:colon' nofile
+
+    _completionTests_verifyCompletion 'testprog prefix special-chars bash1' 'bash1\ space' nofile
+    _completionTests_verifyCompletion 'testprog prefix special-chars bash1 ' '' nofile
+
+    _completionTests_verifyCompletion 'testprog prefix special-chars bash2' 'bash2\\escape' nofile
+    _completionTests_verifyCompletion 'testprog prefix special-chars bash2\\e' 'bash2\\escape' nofile
+    _completionTests_verifyCompletion 'testprog prefix special-chars bash2e' '' nofile
+    _completionTests_verifyCompletion 'testprog prefix special-chars bash2\e' '' nofile
+
+    _completionTests_verifyCompletion 'testprog prefix special-chars bash3' 'bash3\\\ escaped\\\ space' nofile
+    _completionTests_verifyCompletion 'testprog prefix special-chars bash3\\' 'bash3\\\ escaped\\\ space' nofile
+    _completionTests_verifyCompletion 'testprog prefix special-chars bash3\ ' '' nofile
+
+    _completionTests_verifyCompletion 'testprog prefix special-chars bash4' 'bash4\>redirect' nofile
+    _completionTests_verifyCompletion 'testprog prefix special-chars bash4\>' 'bash4\>redirect' nofile
+    # Surprisingly, bash still calls the completion function with an unescaped redirect, but it does not
+    # pass the directive appropriately.  This looks like a bug in bash.  Either way, we want our
+    # script to return no completion so as to let bash do file completion.
+    _completionTests_verifyCompletion 'testprog prefix special-chars bash4>' ''
+
+    _completionTests_verifyCompletion 'testprog prefix special-chars bash5#c' 'bash5#comment' nofile
+
+    _completionTests_verifyCompletion 'testprog prefix special-chars bash6\$v' 'bash6\$var' nofile
+    # Bash still calls the completion function with an unescaped variable
+    # Furthermore, compgen ignores escape characters when matchging, so bash6\$var matches bash6$v
+    _completionTests_verifyCompletion 'testprog prefix special-chars bash6$v' 'bash6\$var' nofile
+
+    _completionTests_verifyCompletion 'testprog prefix special-chars bash7\|p' 'bash7\|pipe' nofile
+    # In practice, bash justifiably does not call our completion script in the below case
+    # because after the pipe (|), it expects another command.  So, we don't need to test this.
+    #  _completionTests_verifyCompletion 'testprog prefix special-chars bash7|p' ''
+
+    _completionTests_verifyCompletion 'testprog prefix special-chars bash8\;s' 'bash8\;semicolon' nofile
+    # In practice, bash justifiably does not call our completion script in the below case
+    # because after the semicolon (;), it expects another command.  So, we don't need to test this.
+    #  _completionTests_verifyCompletion 'testprog prefix special-chars bash8;s' '''
+
+    _completionTests_verifyCompletion 'testprog prefix special-chars bash9=e' 'equals' nofile
+    _completionTests_verifyCompletion 'testprog prefix special-chars bashA:c' 'colon' nofile
+fi
+
+#################################################
 # Special cases
 #################################################
 # Test when there is a space before the binary name
@@ -192,25 +241,28 @@ fi
 # Measure speed of execution without descriptions (for both v1 and v2)
 _completionTests_timing "testprog manycomps " 0.2 "no descriptions"
 
-# Test other bash completion types with descriptions disabled.
-# There should be no change in behaviour when there are no descriptions.
-# The types are: menu-complete/menu-complete-backward (COMP_TYPE == 37)
-# and insert-completions (COMP_TYPE == 42)
-COMP_TYPE=37
-_completionTests_verifyCompletion "testprog prefix nospace b" "bear bearpaw" nospace
-_completionTests_verifyCompletion "testprog prefix nofile b" "bear bearpaw" nofile
+# COMP_TYPE does not get set by bash 3
+if [ $BASH_VERSINFO != 3 ]; then
+   # Test other bash completion types with descriptions disabled.
+   # There should be no change in behaviour when there are no descriptions.
+   # The types are: menu-complete/menu-complete-backward (COMP_TYPE == 37)
+   # and insert-completions (COMP_TYPE == 42)
+   COMP_TYPE=37
+   _completionTests_verifyCompletion "testprog prefix nospace b" "bear bearpaw" nospace
+   _completionTests_verifyCompletion "testprog prefix nofile b" "bear bearpaw" nofile
 
-# Measure speed of execution with menu-complete without descriptions (for both v1 and v2)
-_completionTests_timing "testprog manycomps " 0.2 "menu-complete no descs"
+   # Measure speed of execution with menu-complete without descriptions (for both v1 and v2)
+   _completionTests_timing "testprog manycomps " 0.2 "menu-complete no descs"
 
-COMP_TYPE=42
-_completionTests_verifyCompletion "testprog prefix nospace b" "bear bearpaw" nospace
-_completionTests_verifyCompletion "testprog prefix nofile b" "bear bearpaw" nofile
+   COMP_TYPE=42
+   _completionTests_verifyCompletion "testprog prefix nospace b" "bear bearpaw" nospace
+   _completionTests_verifyCompletion "testprog prefix nofile b" "bear bearpaw" nofile
 
-# Measure speed of execution with insert-completions without descriptions (for both v1 and v2)
-_completionTests_timing "testprog manycomps " 0.2 "insert-completions no descs"
+   # Measure speed of execution with insert-completions without descriptions (for both v1 and v2)
+   _completionTests_timing "testprog manycomps " 0.2 "insert-completions no descs"
 
-unset COMP_TYPE
+   unset COMP_TYPE
+fi
 
 # Test descriptions of bash v2
 if [ "$BASHCOMP_VERSION" = bash2 ]; then
@@ -256,24 +308,86 @@ EOF
    # Measure speed of execution with descriptions
    _completionTests_timing "testprog manycomps " 0.5 "with descriptions"
 
-   # Test descriptions are properly removed when using other bash completion types
-   # The types are: menu-complete/menu-complete-backward (COMP_TYPE == 37)
-   # and insert-completions (COMP_TYPE == 42)
-   COMP_TYPE=37
-   _completionTests_verifyCompletion "testprog prefix nospace b" "bear bearpaw" nospace
-   _completionTests_verifyCompletion "testprog prefix nofile b" "bear bearpaw" nofile
+   ############################
+   # Special character handling
+   ############################
+   # When there are may completions that match, these completions will be shown in a list
+   # and we do not escape them.  We only escape them when there is a single completion as it
+   # will be inserted directly into the command line.
+   _completionTests_verifyCompletion 'testprog prefix special-chars bash' "\
+bash1 space            (with space) \
+bash2\escape           (with escape) \
+bash3\ escaped\ space  (with escape and space) \
+bash4>redirect         (with redirect) \
+bash5#comment          (with comment) \
+bash6\$var              (with var) \
+bash7|pipe             (with pipe) \
+bash8;semicolon        (with semicolon) \
+bash9=equals           (with equal) \
+bashA:colon            (with colon)" nofile
 
-   # Measure speed of execution with menu-complete with descriptions
-   _completionTests_timing "testprog manycomps " 0.2 "menu-complete with descs"
+   _completionTests_verifyCompletion 'testprog prefix special-chars bash1' 'bash1\ space' nofile
+   _completionTests_verifyCompletion 'testprog prefix special-chars bash1 ' '' nofile
 
-   COMP_TYPE=42
-   _completionTests_verifyCompletion "testprog prefix nospace b" "bear bearpaw" nospace
-   _completionTests_verifyCompletion "testprog prefix nofile b" "bear bearpaw" nofile
+   _completionTests_verifyCompletion 'testprog prefix special-chars bash2' 'bash2\\escape' nofile
+   _completionTests_verifyCompletion 'testprog prefix special-chars bash2\\e' 'bash2\\escape' nofile
+   _completionTests_verifyCompletion 'testprog prefix special-chars bash2e' '' nofile
+   _completionTests_verifyCompletion 'testprog prefix special-chars bash2\e' '' nofile
 
-   # Measure speed of execution with insert-completions with descriptions
-   _completionTests_timing "testprog manycomps " 0.2 "insert-completions no descs"
+   _completionTests_verifyCompletion 'testprog prefix special-chars bash3' 'bash3\\\ escaped\\\ space' nofile
+   _completionTests_verifyCompletion 'testprog prefix special-chars bash3\\' 'bash3\\\ escaped\\\ space' nofile
+   _completionTests_verifyCompletion 'testprog prefix special-chars bash3\ ' '' nofile
 
-   unset COMP_TYPE
+   _completionTests_verifyCompletion 'testprog prefix special-chars bash4' 'bash4\>redirect' nofile
+   _completionTests_verifyCompletion 'testprog prefix special-chars bash4\>' 'bash4\>redirect' nofile
+   # Surprisingly, bash still calls the completion function with an unescaped redirect, but it does not
+   # pass the directive appropriately.  This looks like a bug in bash.  Either way, we want our
+   # script to return no completion so as to let bash do file completion.
+   _completionTests_verifyCompletion 'testprog prefix special-chars bash4>' ''
+
+   _completionTests_verifyCompletion 'testprog prefix special-chars bash5#c' 'bash5#comment' nofile
+
+   _completionTests_verifyCompletion 'testprog prefix special-chars bash6\$v' 'bash6\$var' nofile
+   # Bash still calls the completion function with an unescaped variable
+   _completionTests_verifyCompletion 'testprog prefix special-chars bash6$v' '' nofile
+
+   _completionTests_verifyCompletion 'testprog prefix special-chars bash7\|p' 'bash7\|pipe' nofile
+   # In practice, bash justifiably does not call our completion script in the below case
+   # because after the pipe (|), it expects another command.  So, we don't need to test this.
+   #  _completionTests_verifyCompletion 'testprog prefix special-chars bash7|p' ''
+
+   _completionTests_verifyCompletion 'testprog prefix special-chars bash8\;s' 'bash8\;semicolon' nofile
+   # In practice, bash justifiably does not call our completion script in the below case
+   # because after the semicolon (;), it expects another command.  So, we don't need to test this.
+   #  _completionTests_verifyCompletion 'testprog prefix special-chars bash8;s' '''
+
+   _completionTests_verifyCompletion 'testprog prefix special-chars bash9=e' 'equals' nofile
+   _completionTests_verifyCompletion 'testprog prefix special-chars bashA:c' 'colon' nofile
+   ##################################
+   # end of pecial character handling
+   ##################################
+
+   # COMP_TYPE does not get set by bash 3
+   if [ $BASH_VERSINFO != 3 ]; then
+      # Test descriptions are properly removed when using other bash completion types
+      # The types are: menu-complete/menu-complete-backward (COMP_TYPE == 37)
+      # and insert-completions (COMP_TYPE == 42)
+      COMP_TYPE=37
+      _completionTests_verifyCompletion "testprog prefix nospace b" "bear bearpaw" nospace
+      _completionTests_verifyCompletion "testprog prefix nofile b" "bear bearpaw" nofile
+
+      # Measure speed of execution with menu-complete with descriptions
+      _completionTests_timing "testprog manycomps " 0.2 "menu-complete with descs"
+
+      COMP_TYPE=42
+      _completionTests_verifyCompletion "testprog prefix nospace b" "bear bearpaw" nospace
+      _completionTests_verifyCompletion "testprog prefix nofile b" "bear bearpaw" nofile
+
+      # Measure speed of execution with insert-completions with descriptions
+      _completionTests_timing "testprog manycomps " 0.2 "insert-completions no descs"
+
+      unset COMP_TYPE
+   fi
 fi
 
 # This must be the last call.  It allows to exit with an exit code
