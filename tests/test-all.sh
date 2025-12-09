@@ -167,10 +167,8 @@ if [ $TARGET = fish ]; then
    IMAGE=comp-test:fish
 
    $CONTAINER_ENGINE build -t ${IMAGE} ${BASE_DIR} -f - <<- EOF
-      FROM redhat/ubi8
-      RUN cd /etc/yum.repos.d/ && \
-          curl -O https://download.opensuse.org/repositories/shells:/fish/CentOS_8/shells:fish.repo && \
-          yum install -y fish which
+      FROM fedora:latest
+      RUN dnf install -y fish which
 
       WORKDIR /work
       COPY . .
