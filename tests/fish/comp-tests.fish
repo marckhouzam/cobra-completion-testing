@@ -150,6 +150,10 @@ _completionTests_verifyCompletion "echo hello; testprog comp" "completion"
 # though we may not get an error code. 
 _completionTests_verifyCompletion "testprog '" ""
 
+# Check escaping of special characters in completions
+# https://github.com/spf13/cobra/issues/1933
+_completionTests_verifyCompletion "testprog prefix default 'a | b' b" "bear	an animal bearpaw	a dessert"
+
 # Test debug printouts
 _completionTests_verifyDebug
 
